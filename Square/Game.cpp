@@ -2,7 +2,7 @@
 #include "Game.h"
 
 Game::Game() :
-    objectManager{ new ObjectManager{} }
+    objectManager{ new ObjectManager{}}
 {
 
 }
@@ -58,11 +58,26 @@ void Game::splash()
     static Uint32 splashcurTick{ 0 };
     auto splash{ std::make_shared<GameObject>()};
     splash->LoadImage(renderer,"Data/splash.png");
-    splash->setPos( 512 / 2, 768 / 2 );
     objectManager->AddObject(splash);
-    while (splashTick < 60)
+    splash->setPos(512 / 2, 768 / 2);
+    render(60);
+    while (splashTick < 150)
     {
-        render(splashTick);
+        float deltaTime = SDL_GetTicks() - splashcurTick / 1000.0f;
+        if (deltaTime > 0.05f)
+        {
+            deltaTime = 0.05f;
+        }
+        splashcurTick = SDL_GetTicks();
+        if (splashTick > 60)
+        {
+            splash->setPos(512 / 2, 768  / 2- 200 * (splashTick - 60) * deltaTime);
+            render();
+        }
+        else if (splashTick <= 60)
+        {
+            render(60 - splashTick);
+        }
         ++splashTick;
         SDL_Delay(25);
     }
@@ -74,9 +89,10 @@ void Game::run()
 {
     while (bRun)
     {
+        event();
         input();
         update();
-        render(Fade);
+        render();
     }
 }
 
@@ -87,6 +103,11 @@ void Game::quit()
     SDL_Quit();
 }
 
+void Game::event()
+{
+
+}
+
 void Game::input()
 {
     SDL_Event event;
@@ -95,7 +116,6 @@ void Game::input()
         switch (event.type)
         {
         case SDL_QUIT:
-            bRun = false;
             quit();
             break;
         }
@@ -112,6 +132,10 @@ void Game::render(int fade)
         SDL_QueryTexture(object->texture(), NULL, NULL, &rect.w,
             &rect.h);
         SDL_SetTextureBlendMode(object->texture(), SDL_BLENDMODE_BLEND);
+        if (4 * fade > 255)
+        {
+            fade = 255 / 4;
+        }
         SDL_SetTextureAlphaMod(object->texture(), 255 - 4 * fade);
         if (SDL_RenderCopy(renderer, object->texture(),
             &rect, &posRect) != 0)
