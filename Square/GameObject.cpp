@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 GameObject::GameObject()
+	: _dir{0,0}
 {
 }
 
@@ -27,6 +28,7 @@ bool GameObject::LoadImage(SDL_Renderer* renderer,const std::string& str)
 		SDL_Log("Failed to Create Texture : %s", SDL_GetError());
 
 	}
+	_textureName = str;
 	SDL_FreeSurface(_surface);
 	return true;
 }

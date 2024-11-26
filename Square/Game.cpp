@@ -2,19 +2,22 @@
 #include "Game.h"
 
 Game::Game() :
-    objectManager{ new ObjectManager{}}
+    objectManager{ new ObjectManager{}},
+    eventHandler{ new EventHandler{} }
 {
 
 }
 
 bool Game::init()
 {
+    //init sdl
     int sdlInit = SDL_Init(SDL_INIT_EVERYTHING);
     if (sdlInit != 0)
     {
         SDL_Log("init failed : %s", SDL_GetError());
         return false;
     }
+    //create window
     window = SDL_CreateWindow("Square ManiaQ",
         100, 100,
         512, 768, SDL_WINDOW_OPENGL);
@@ -24,7 +27,7 @@ bool Game::init()
         SDL_Log("failed to create window : %s", SDL_GetError());
         return false;
     }
-
+    //create renderer
     renderer = SDL_CreateRenderer(window,
         -1,
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -33,10 +36,12 @@ bool Game::init()
         SDL_Log("failed to create renderer: %s", SDL_GetError());
         return false;
     }
+    // set program icon
     SDL_Surface* icon= IMG_Load("Data/icon.png");
     SDL_SetWindowIcon(window, icon);
     
 
+    //init image
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
     {
         SDL_Log("failed to init image : %s", SDL_GetError());
@@ -48,6 +53,10 @@ bool Game::init()
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
+    // push splash event
+    Event e;
+    e.eid = EID::SPLASH;
+    eventHandler->PushEvent(std::make_shared<Event>(e));
     return true;
 }
 
@@ -56,22 +65,22 @@ void Game::splash()
     SDL_Log("Splash Screen");
     static Uint32 splashTick{ 0 };
     static Uint32 splashcurTick{ 0 };
+    //add splash logo object
     auto splash{ std::make_shared<GameObject>()};
     splash->LoadImage(renderer,"Data/splash.png");
     objectManager->AddObject(splash);
     splash->setPos(512 / 2, 768 / 2);
+    //set alpha to 240
     render(60);
     while (splashTick < 150)
     {
         float deltaTime = SDL_GetTicks() - splashcurTick / 1000.0f;
         if (deltaTime > 0.05f)
-        {
             deltaTime = 0.05f;
-        }
         splashcurTick = SDL_GetTicks();
         if (splashTick > 60)
         {
-            splash->setPos(512 / 2, 768  / 2- 200 * (splashTick - 60) * deltaTime);
+            splash->setPos(512 / 2, 768  / 2 - ( 2 * splashTick * (splashTick - 60) * deltaTime));
             render();
         }
         else if (splashTick <= 60)
@@ -79,10 +88,12 @@ void Game::splash()
             render(60 - splashTick);
         }
         ++splashTick;
-        SDL_Delay(25);
     }
     objectManager->DeleteObject(splash);
     SDL_Log("Splash End");
+    Event e;
+    e.eid = EID::TITLE;
+    eventHandler->PushEvent(std::make_shared<Event>(e));
 }
 
 void Game::run()
@@ -98,16 +109,31 @@ void Game::run()
 
 void Game::quit()
 {
-    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
     SDL_Quit();
 }
 
+//deals with non-SDL event
 void Game::event()
 {
-
+    while (auto e = eventHandler->PopEvent())
+    {
+        switch (e->eid)
+        {
+        case EID::SPLASH:
+            splash();
+            gameState = GameState::SPLASH;
+            break;
+        case EID::TITLE:
+            title();
+            gameState = GameState::TITLE;
+            break;
+        }
+    }
 }
 
+//deals with SDL-related Event (inputs)
 void Game::input()
 {
     SDL_Event event;
@@ -145,31 +171,23 @@ void Game::render(int fade)
     }
     SDL_RenderPresent(renderer);
 
-    /*SDL_Surface* surface = IMG_Load("Data/splash.png");
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,
-    surface);
-
-    SDL_Rect src;
-    SDL_Rect dst;
-
-    src.x = 0;
-    src.y = 0;
-    src.w = 256;
-    src.h = 128;
-
-    dst.x = 512 / 2;
-    dst.y = 768 / 2;
-    dst.w = src.w;
-    dst.h = src.h;
-    SDL_RenderClear(renderer);
-    SDL_QueryTexture(texture, NULL, NULL, &src.w, &src.h);
-    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-    SDL_SetTextureAlphaMod(texture, 128);
-    SDL_RenderCopy(renderer, texture, &src, &dst);
-    SDL_RenderPresent(renderer);*/
+}
+void Game::title()
+{
+    SDL_Log("Title");
+    auto titleLogo = std::make_shared<GameObject>();
+    titleLogo->LoadImage(renderer, "Data/title.png");
+    objectManager->AddObject(titleLogo);
+    titleLogo->setPos(10 - 256, 10);
 
 }
 void Game::update()
 {
+    float deltaTime = SDL_GetTicks() - curTick / 1000.0f;
+    if (deltaTime > 0.05f)
+    {
+        deltaTime = 0.05f;
+    }
+    curTick = SDL_GetTicks();
 }
 

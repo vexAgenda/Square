@@ -4,17 +4,25 @@
 
 enum class EID
 {
-	EID_START,
-	EID_SPLASH = 0b1,
-	EID_TITLE = 0b10,
-	EID_END = 0b1000000
+	START,
+	SPLASH = 0b1,
+	TITLE = 0b10,
+	END = 65536
+};
+
+struct Event
+{
+	EID eid = EID::START;
 };
 class EventHandler
 {
 public:
 	EventHandler();
 	~EventHandler();
+
+	void PushEvent(std::shared_ptr<Event> event);
+	std::shared_ptr<Event> PopEvent();
 private:
-	
+	std::queue<std::shared_ptr<Event>> _events;
 };
 

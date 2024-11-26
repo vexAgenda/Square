@@ -19,3 +19,15 @@ void ObjectManager::DeleteObject(std::shared_ptr<GameObject> object)
 	_objects.erase(std::remove(_objects.begin(),_objects.end()
 	,object),_objects.end());
 }
+
+std::shared_ptr<GameObject> ObjectManager::find(const std::string& textureName)
+{
+	for (auto object : _objects)
+	{
+		if (object->textureName() == textureName)
+		{
+			return object;
+		}
+	}
+	return nullptr;
+}

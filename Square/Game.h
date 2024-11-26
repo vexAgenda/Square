@@ -1,22 +1,20 @@
 #pragma once
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
-#include <SDL/SDL_events.h>
 
 #include <memory>
+#include <cmath>
 
 #include "ObjectManager.h"
+#include "EventHandler.h"
 
-enum EID_TYPE
+enum class GameState
 {
-	EID_GAME = 1
-};
-enum EID_CODE
-{
-	EID_CODE_START,
-	EID_CODE_SPLASH = 0b1,
-	EID_CODE_TITLE = 0b10,
-	EID_CODE_END = 0b1000000
+	START,
+	SPLASH,
+	NEUTRAL,
+	TITLE,
+	END
 };
 
 class Game
@@ -32,14 +30,19 @@ private:
 	void event();
 	void input();
 	void render(int = 0);
+	void title();
 	void update();
+	// object-related
 
 	SDL_Window* window{};
 	SDL_Renderer* renderer{};
 
 	std::unique_ptr<ObjectManager> objectManager;
+	std::unique_ptr<EventHandler> eventHandler;
 
 	bool bRun{ true };
 	int Fade{ 0 };
+	Uint32 curTick{};
+	GameState gameState;
 };
 
