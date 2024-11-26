@@ -88,6 +88,7 @@ void Game::splash()
             render(60 - splashTick);
         }
         ++splashTick;
+        SDL_Delay(20);
     }
     objectManager->DeleteObject(splash);
     SDL_Log("Splash End");
@@ -179,6 +180,8 @@ void Game::title()
     titleLogo->LoadImage(renderer, "Data/title.png");
     objectManager->AddObject(titleLogo);
     titleLogo->setPos(10 - 256, 10);
+
+    auto startButton = std::make_shared<Button>();
 
 }
 void Game::update()

@@ -1,3 +1,3 @@
 ﻿  Game.cpp
-C:\Users\pleas\source\repos\Square\Square\Game.cpp(83,46): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe
+D:\repos\Square\Square\Game.cpp(83,46): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Square.vcxproj -> D:\repos\Square\x64\Debug\Square.exe
