@@ -28,11 +28,16 @@ public:
 	void quit();
 private:
 	void event();
+	void state();
 	void input();
-	void render(int = 0);
+	void render();
 	void title();
 	void update();
 	// object-related
+	std::shared_ptr<GameObject> CreateObject(const std::string& objectName, const std::string&
+		fileName, Pos* pos, MoveType mType);
+	std::shared_ptr<GameObject> CreateMoveTargetObject(const std::string& objectName, const std::string&
+		fileName, Pos* pos, MoveType mType);
 
 	SDL_Window* window{};
 	SDL_Renderer* renderer{};

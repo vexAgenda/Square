@@ -62,39 +62,32 @@ bool Game::init()
 
 void Game::splash()
 {
-    SDL_Log("Splash Screen");
-    static Uint32 splashTick{ 0 };
+    static int splashTick{ 0 };
     static Uint32 splashcurTick{ 0 };
     //add splash logo object
-    auto splash{ std::make_shared<GameObject>()};
-    splash->LoadImage(renderer,"Data/splash.png");
-    objectManager->AddObject(splash);
-    splash->setPos(512 / 2, 768 / 2);
-    //set alpha to 240
-    render(60);
-    while (splashTick < 150)
+    std::shared_ptr<GameObject> splash{ nullptr };
+    if (splashTick == 0)
     {
-        float deltaTime = SDL_GetTicks() - splashcurTick / 1000.0f;
-        if (deltaTime > 0.05f)
-            deltaTime = 0.05f;
-        splashcurTick = SDL_GetTicks();
-        if (splashTick > 60)
-        {
-            splash->setPos(512 / 2, 768  / 2 - ( 2 * splashTick * (splashTick - 60) * deltaTime));
-            render();
-        }
-        else if (splashTick <= 60)
-        {
-            render(60 - splashTick);
-        }
-        ++splashTick;
-        SDL_Delay(20);
+        splash = CreateObject("splash", "Data/splash.png", 
+            new Pos[2]{ { 512 / 2,768 / 2 }, { 0,splashTick } }, MoveType::EXPONENT);
+        //set alpha to 240
+        splash->SetTextureFade(60);
     }
-    objectManager->DeleteObject(splash);
-    SDL_Log("Splash End");
-    Event e;
-    e.eid = EID::TITLE;
-    eventHandler->PushEvent(std::make_shared<Event>(e));
+    splash = objectManager->find("splash");
+    if (splashTick > 60)
+    {
+        splash->SetMoveVelocity({ 0,(splashTick - 60) * -1 });
+    }
+    if (splashTick > 150)
+    {
+        SDL_Log("Splash End");
+        Event e;
+        e.eid = EID::TITLE;
+        eventHandler->PushEvent(std::make_shared<Event>(e));
+        objectManager->DeleteObject(splash);
+    }
+    SDL_Delay(20);
+    ++splashTick;
 }
 
 void Game::run()
@@ -102,6 +95,7 @@ void Game::run()
     while (bRun)
     {
         event();
+        state();
         input();
         update();
         render();
@@ -123,14 +117,25 @@ void Game::event()
         switch (e->eid)
         {
         case EID::SPLASH:
-            splash();
             gameState = GameState::SPLASH;
             break;
         case EID::TITLE:
-            title();
             gameState = GameState::TITLE;
             break;
         }
+    }
+}
+
+void Game::state()
+{
+    switch (gameState)
+    {
+    case GameState::SPLASH:
+        splash();
+        break;
+    case GameState::TITLE:
+        title();
+        break;
     }
 }
 
@@ -149,7 +154,7 @@ void Game::input()
     }
 }
 
-void Game::render(int fade)
+void Game::render()
 {
     SDL_RenderClear(renderer);
     for (auto object : objectManager->objects())
@@ -159,11 +164,16 @@ void Game::render(int fade)
         SDL_QueryTexture(object->texture(), NULL, NULL, &rect.w,
             &rect.h);
         SDL_SetTextureBlendMode(object->texture(), SDL_BLENDMODE_BLEND);
+        int fade = object->textureFade();
         if (4 * fade > 255)
         {
             fade = 255 / 4;
         }
-        SDL_SetTextureAlphaMod(object->texture(), 255 - 4 * fade);
+        if (object->textureFade() > 0)
+        {
+            SDL_SetTextureAlphaMod(object->texture(), 255 - 4 * fade);
+            object->SetTextureFade(fade - 1);
+        }
         if (SDL_RenderCopy(renderer, object->texture(),
             &rect, &posRect) != 0)
         {
@@ -175,13 +185,27 @@ void Game::render(int fade)
 }
 void Game::title()
 {
-    SDL_Log("Title");
-    auto titleLogo = std::make_shared<GameObject>();
-    titleLogo->LoadImage(renderer, "Data/title.png");
-    objectManager->AddObject(titleLogo);
-    titleLogo->setPos(10 - 256, 10);
+    static bool init{ false };
+    static int titleTick{ 0 };
+    if (!init)
+    {
+        SDL_Log("Title");
+        CreateMoveTargetObject("titleLogo", "Data/title.png", new Pos[3]{ {-256,0},
+            {0,0},{10,0} }, MoveType::EXPONENT);
+        auto startButton = CreateMoveTargetObject(
+            "titleStartButton", "Data/startbutton.png",
+            new Pos[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
+            MoveType::EXPONENT
+        );
+        startButton->SetTextureFade(60);
+        init = true;
+    }
+    auto titleLogo = objectManager->find("titleLogo");
+    auto startButton = objectManager->find("titleStartButton");
+    titleLogo->SetMoveVelocity({titleTick,0});
+    startButton->SetMoveVelocity({0,titleTick });
+    ++titleTick;
 
-    auto startButton = std::make_shared<Button>();
 
 }
 void Game::update()
@@ -192,5 +216,30 @@ void Game::update()
         deltaTime = 0.05f;
     }
     curTick = SDL_GetTicks();
+    for (auto object : objectManager->objects())
+    {
+        object->Move(deltaTime);
+    }
 }
 
+std::shared_ptr<GameObject> Game::CreateObject(
+const std::string& objectName, const std::string&
+fileName,Pos* pos,MoveType mType)
+// pos[0] - initPos pos[1] - velocity
+{
+    auto object = std::make_shared<GameObject>(objectName);
+    objectManager->AddObject(object);
+    object->LoadImage(renderer, fileName);
+    object->InitMove(pos[0], pos[1], MoveType::EXPONENT);
+    return object;
+}
+
+std::shared_ptr<GameObject>  Game::CreateMoveTargetObject(const std::string& objectName, const std::string&
+    fileName, Pos* pos, MoveType mType)
+    // pos[0] - initPos pos[1] - velocity pos[2] - moveTargetPos
+{
+    auto object = CreateObject(objectName, fileName, new Pos[2]{ pos[0],pos[1] }, mType);
+    Pos targetPos = pos[2];
+    object->InitMove(pos[0], pos[1], MoveType::EXPONENT, &targetPos);
+    return object;
+}
