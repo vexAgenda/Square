@@ -38,6 +38,13 @@ bool GameObject::LoadImage(SDL_Renderer* renderer,const std::string& str)
 	return true;
 }
 
+void GameObject::InitFade(Fade fadeType, int currentFade, int amount)
+{
+	SetFadeType(fadeType);
+	SetCurrentFade(currentFade);
+	SetFadeAmount(amount);
+}
+
 void GameObject::InitMove(const Pos& initPos,const Pos& velocity, const MoveType& moveType, Pos* target)
 {
 	SetPos(initPos.x, initPos.y);
@@ -84,6 +91,12 @@ void GameObject::SetMoveTarget(const Pos& target)
 	{
 		_targetPos = new Pos{ target.x,target.y };
 	}
+}
+
+bool GameObject::isMouseCollide(const Pos& mouse)
+{
+	return mouse.x >= _posRect.x && mouse.x <= _posRect.x + _posRect.w &&
+		mouse.y >= _posRect.y && mouse.y <= _posRect.y + _posRect.h;
 }
 
 void GameObject::MoveDefault(float deltaTime)

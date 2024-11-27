@@ -71,7 +71,7 @@ void Game::splash()
         splash = CreateObject("splash", "Data/splash.png", 
             new Pos[2]{ { 512 / 2,768 / 2 }, { 0,splashTick } }, MoveType::EXPONENT);
         //set alpha to 240
-        splash->SetTextureFade(60);
+        splash->InitFade(Fade::FADE_OUT, 60, 4);
     }
     splash = objectManager->find("splash");
     if (splashTick > 60)
@@ -82,7 +82,7 @@ void Game::splash()
     {
         SDL_Log("Splash End");
         Event e;
-        e.eid = EID::TITLE;
+        e.eid = EID::TITLE_ENTER;
         eventHandler->PushEvent(std::make_shared<Event>(e));
         objectManager->DeleteObject(splash);
     }
@@ -119,6 +119,9 @@ void Game::event()
         case EID::SPLASH:
             gameState = GameState::SPLASH;
             break;
+        case EID::TITLE_ENTER:
+            gameState = GameState::TITLE_ENTER;
+            break;
         case EID::TITLE:
             gameState = GameState::TITLE;
             break;
@@ -132,6 +135,9 @@ void Game::state()
     {
     case GameState::SPLASH:
         splash();
+        break;
+    case GameState::TITLE_ENTER:
+        titleEnter();
         break;
     case GameState::TITLE:
         title();
@@ -152,6 +158,9 @@ void Game::input()
             break;
         }
     }
+
+    SDL_GetMouseState(&_mouse.x, &_mouse.y);
+
 }
 
 void Game::render()
@@ -164,15 +173,14 @@ void Game::render()
         SDL_QueryTexture(object->texture(), NULL, NULL, &rect.w,
             &rect.h);
         SDL_SetTextureBlendMode(object->texture(), SDL_BLENDMODE_BLEND);
-        int fade = object->textureFade();
-        if (4 * fade > 255)
+        switch (object->fadeType())
         {
-            fade = 255 / 4;
-        }
-        if (object->textureFade() > 0)
-        {
-            SDL_SetTextureAlphaMod(object->texture(), 255 - 4 * fade);
-            object->SetTextureFade(fade - 1);
+        case Fade::FADE_IN:
+            renderFadeIn(object);
+            break;
+        case Fade::FADE_OUT:
+            renderFadeOut(object);
+            break;
         }
         if (SDL_RenderCopy(renderer, object->texture(),
             &rect, &posRect) != 0)
@@ -183,10 +191,39 @@ void Game::render()
     SDL_RenderPresent(renderer);
 
 }
-void Game::title()
+void Game::renderFadeOut(std::shared_ptr<GameObject> object)
+{
+    int currentFade = object->currentFade();
+    const int fadeAmount = object->fadeAmount();
+    if (fadeAmount * currentFade > 255)
+    {
+        currentFade = 255 / fadeAmount;
+    }
+    if (object->currentFade() > 0)
+    {
+        SDL_SetTextureAlphaMod(object->texture(), 255 - fadeAmount * currentFade);
+        object->SetCurrentFade(currentFade - 1);
+    }
+}
+void Game::renderFadeIn(std::shared_ptr<GameObject> object)
+{
+    int currentFade = object->currentFade();
+    const int fadeAmount = object->fadeAmount();
+    if (fadeAmount * currentFade > 255)
+    {
+        currentFade = 255 / fadeAmount;
+    }
+    if (object->currentFade() > 0)
+    {
+        SDL_SetTextureAlphaMod(object->texture(), fadeAmount * currentFade);
+        object->SetCurrentFade(currentFade - 1);
+    }
+}
+void Game::titleEnter()
 {
     static bool init{ false };
     static int titleTick{ 0 };
+    static bool isButtonActive{ false };
     if (!init)
     {
         SDL_Log("Title");
@@ -197,16 +234,39 @@ void Game::title()
             new Pos[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
             MoveType::EXPONENT
         );
-        startButton->SetTextureFade(60);
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");
     auto startButton = objectManager->find("titleStartButton");
-    titleLogo->SetMoveVelocity({titleTick,0});
-    startButton->SetMoveVelocity({0,titleTick });
+
+    if (titleTick > 150)
+    {
+        Event e;
+        e.eid = EID::TITLE;
+        eventHandler->PushEvent(std::make_shared<Event>( e));
+    }
+    titleLogo->SetMoveVelocity({ titleTick / 4,0 });
+    startButton->SetMoveVelocity({ 0,titleTick / 4 });
     ++titleTick;
 
 
+}
+void Game::title()
+{
+    for (auto object : objectManager->objects())
+    {
+        if (object == objectManager->find("titleStartButton"))
+        {
+            if (object->isMouseCollide(_mouse))
+            {
+                object->SetPos(369, 250);
+            }
+            else
+            {
+                object->SetPos(374, 250);
+            }
+        }
+    }
 }
 void Game::update()
 {

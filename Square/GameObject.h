@@ -16,6 +16,13 @@ enum class MoveType
 	EXPONENT,
 	END
 };
+
+enum class Fade
+{
+	NONE,
+	FADE_IN,
+	FADE_OUT
+};
 class GameObject
 {
 public:
@@ -25,8 +32,13 @@ public:
 
 	bool LoadImage(SDL_Renderer* renderer,const std::string& str);
 
-	int textureFade() { return _textureFade; }
-	void SetTextureFade(int fade) { _textureFade = fade; }
+	Fade fadeType() { return _fadeType; }
+	void SetFadeType(Fade type) { _fadeType = type; }
+	int currentFade() { return _currentFade; }
+	void SetCurrentFade(int amount) { _currentFade = amount; }
+	void SetFadeAmount(int amount) { _fadeAmount = amount; }
+	int fadeAmount() { return _fadeAmount; }
+	void InitFade(Fade fadeType, int currentFade, int amount);
 
 	//move related functions
 	void InitMove(const Pos& initPos,const Pos& velocity, const MoveType& moveType,Pos* target = nullptr);
@@ -52,6 +64,7 @@ public:
 		_moveType = moveType;
 	}
 	void SetMoveTarget(const Pos& target);
+	bool MoveTargetDone() { SDL_Log("%s : %d, %d ",_objectName.c_str(),_posRect.x,_posRect.y); return _targetPos->x == _posRect.x && _targetPos->y == _posRect.y; }
 
 	void ClearMoveTarget()
 	{
@@ -64,14 +77,19 @@ public:
 	SDL_Rect posRect() { return _posRect; }
 	std::string objectName() { return _objectName; }
 
+	bool isMouseCollide(const Pos& mouse);
+
 private:
 	void MoveDefault(float deltaTick);
 	void MoveExponential(float deltaTick);
 
 	SDL_Texture* _texture{ nullptr };
-	int _textureFade{ 0 };
 	SDL_Rect _imageRect{};
 	SDL_Rect _posRect{};
+	//texture fade
+	int _fadeAmount{ 0 };
+	int _currentFade{ 0 };
+	Fade _fadeType{ Fade::NONE };
 	// move related
 	Pos _velocity{ 0,0 };
 	Pos* _targetPos{ nullptr };

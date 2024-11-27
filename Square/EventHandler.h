@@ -7,6 +7,8 @@ enum class EID
 	START,
 	SPLASH = 0b1,
 	TITLE = 0b10,
+	TITLE_ENTER = 0b11,
+	NEUTRAL = 0b100,
 	END = 65536
 };
 
