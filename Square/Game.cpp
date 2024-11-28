@@ -1,5 +1,6 @@
 
 #include "Game.h"
+#include "Button.h"
 
 Game::Game() :
     objectManager{ new ObjectManager{}},
@@ -68,8 +69,8 @@ void Game::splash()
     std::shared_ptr<GameObject> splash{ nullptr };
     if (splashTick == 0)
     {
-        splash = CreateObject("splash", "Data/splash.png", 
-            new Pos[2]{ { 512 / 2,768 / 2 }, { 0,splashTick } }, MoveType::EXPONENT);
+        splash = CreateObject<GameObject>("splash", "Data/splash.png", 
+            new Vector2F[2]{ { 512 / 2,768 / 2 }, { 0,0 } }, MoveType::SQUARE);
         //set alpha to 240
         splash->InitFade(Fade::FADE_OUT, 60, 4);
     }
@@ -154,6 +155,7 @@ void Game::input()
         switch (event.type)
         {
         case SDL_QUIT:
+            bRun = false;
             quit();
             break;
         }
@@ -169,7 +171,7 @@ void Game::render()
     for (auto object : objectManager->objects())
     {
         SDL_Rect rect = object->imageRect();
-        SDL_Rect posRect = object->posRect();
+        SDL_FRect posRect = object->posRect();
         SDL_QueryTexture(object->texture(), NULL, NULL, &rect.w,
             &rect.h);
         SDL_SetTextureBlendMode(object->texture(), SDL_BLENDMODE_BLEND);
@@ -182,7 +184,7 @@ void Game::render()
             renderFadeOut(object);
             break;
         }
-        if (SDL_RenderCopy(renderer, object->texture(),
+        if (SDL_RenderCopyF(renderer, object->texture(),
             &rect, &posRect) != 0)
         {
             SDL_Log("Render Failed: %s",SDL_GetError());
@@ -227,12 +229,12 @@ void Game::titleEnter()
     if (!init)
     {
         SDL_Log("Title");
-        CreateMoveTargetObject("titleLogo", "Data/title.png", new Pos[3]{ {-256,0},
-            {0,0},{10,0} }, MoveType::EXPONENT);
-        auto startButton = CreateMoveTargetObject(
+        CreateMoveTargetObject<GameObject>("titleLogo", "Data/title.png", new Vector2F[3]{ {-256,0},
+            {0,0},{10,0} }, MoveType::SQUARE);
+        auto startButton = CreateMoveTargetObject<Button>(
             "titleStartButton", "Data/startbutton.png",
-            new Pos[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
-            MoveType::EXPONENT
+            new Vector2F[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
+            MoveType::SQUARE
         );
         init = true;
     }
@@ -241,6 +243,7 @@ void Game::titleEnter()
 
     if (titleTick > 150)
     {
+        startButton->SetMoveType(MoveType::DEFAULT);
         Event e;
         e.eid = EID::TITLE;
         eventHandler->PushEvent(std::make_shared<Event>( e));
@@ -255,16 +258,22 @@ void Game::title()
 {
     for (auto object : objectManager->objects())
     {
+        static int buttonMovVel{ 0 };
         if (object == objectManager->find("titleStartButton"))
         {
+            object->ClearMoveTarget();
             if (object->isMouseCollide(_mouse))
             {
-                object->SetPos(369, 250);
+                object->SetMoveTarget({334, 250});
+                object->SetMoveVelocity({ --buttonMovVel,0 });
             }
             else
             {
-                object->SetPos(374, 250);
+                object->SetMoveTarget({ 374, 250 });
+                object->SetMoveVelocity({ ++buttonMovVel,0 });
             }
+            if (std::abs(buttonMovVel) > 50)
+                buttonMovVel = 0;
         }
     }
 }
@@ -282,24 +291,3 @@ void Game::update()
     }
 }
 
-std::shared_ptr<GameObject> Game::CreateObject(
-const std::string& objectName, const std::string&
-fileName,Pos* pos,MoveType mType)
-// pos[0] - initPos pos[1] - velocity
-{
-    auto object = std::make_shared<GameObject>(objectName);
-    objectManager->AddObject(object);
-    object->LoadImage(renderer, fileName);
-    object->InitMove(pos[0], pos[1], MoveType::EXPONENT);
-    return object;
-}
-
-std::shared_ptr<GameObject>  Game::CreateMoveTargetObject(const std::string& objectName, const std::string&
-    fileName, Pos* pos, MoveType mType)
-    // pos[0] - initPos pos[1] - velocity pos[2] - moveTargetPos
-{
-    auto object = CreateObject(objectName, fileName, new Pos[2]{ pos[0],pos[1] }, mType);
-    Pos targetPos = pos[2];
-    object->InitMove(pos[0], pos[1], MoveType::EXPONENT, &targetPos);
-    return object;
-}

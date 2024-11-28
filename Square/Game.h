@@ -15,6 +15,7 @@ enum class GameState
 	NEUTRAL,
 	TITLE,
 	TITLE_ENTER,
+	TITLE_END,
 	END
 };
 
@@ -40,10 +41,25 @@ private:
 	void titleEnter();
 	void title();
 	// object-related
-	std::shared_ptr<GameObject> CreateObject(const std::string& objectName, const std::string&
-		fileName, Pos* pos, MoveType mType);
-	std::shared_ptr<GameObject> CreateMoveTargetObject(const std::string& objectName, const std::string&
-		fileName, Pos* pos, MoveType mType);
+	template <typename T>
+	std::shared_ptr<T> CreateObject(const std::string& objectName, const std::string&
+		fileName, Vector2F* pos, MoveType mType)
+	{
+		auto object = std::make_shared<T>(objectName);
+		objectManager->AddObject(object);
+		object->LoadImage(renderer, fileName);
+		object->InitMove(pos[0], pos[1], mType);
+		return object;
+	}
+	template <typename T>
+	std::shared_ptr<T> CreateMoveTargetObject(const std::string& objectName, const std::string&
+		fileName, Vector2F* pos, MoveType mType)
+	{
+		auto object = CreateObject<T>(objectName, fileName, new Vector2F[2]{ pos[0],pos[1] }, mType);
+		Vector2F targetPos = pos[2];
+		object->InitMove(pos[0], pos[1], mType, &targetPos);
+		return object;
+	}
 
 	SDL_Window* window{};
 	SDL_Renderer* renderer{};
@@ -54,7 +70,7 @@ private:
 	bool bRun{ true };
 	int Fade{ 0 };
 	Uint32 curTick{};
-	GameState gameState;
-	Pos _mouse{};
+	GameState gameState{ GameState::START };
+	Vector2 _mouse{};
 };
 
