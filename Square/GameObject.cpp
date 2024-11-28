@@ -74,8 +74,7 @@ void GameObject::Move(float deltaTime)
 			_posRect.x = _targetPos->x;
 			_posRect.y = _targetPos->y;
 			_velocity = { 0,0 };
-			delete _targetPos;
-			_targetPos = nullptr;
+			return;
 		}
 	}
 

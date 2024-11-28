@@ -69,7 +69,7 @@ public:
 		_moveType = moveType;
 	}
 	void SetMoveTarget(const Vector2F& target);
-	bool MoveTargetDone() { SDL_Log("%s : %d, %d ",_objectName.c_str(),_posRect.x,_posRect.y); return _targetPos->x == _posRect.x && _targetPos->y == _posRect.y; }
+	bool MoveTargetDone() { SDL_Log("%s : %f, %f ",_objectName.c_str(),_posRect.x,_posRect.y); return _targetPos->x == _posRect.x && _targetPos->y == _posRect.y; }
 
 	void ClearMoveTarget()
 	{
