@@ -1,3 +1,3 @@
 Project Square
 =========
-Version 0.1
+Title Only, WIP on Game Features.
