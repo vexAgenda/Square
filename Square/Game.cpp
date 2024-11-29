@@ -134,6 +134,10 @@ void Game::click_event(std::shared_ptr<Button> btn)
     {
         SDL_Log("hi!");
     }
+    else if (btn == objectManager->find("optionButton"))
+    {
+        SDL_Log("hi!");
+    }
 }
 
 void Game::state()
@@ -173,7 +177,8 @@ void Game::input()
                 {
                     if (auto button = std::dynamic_pointer_cast<Button>(object))
                     {
-                        click_event(button);
+                        if(button->is_hover(_mouse))
+                            click_event(button);
                     }
                 }
             }
@@ -256,8 +261,9 @@ void Game::titleEnter()
         CreateMoveTargetObject<Button>(
             "titleStartButton", "Data/startbutton.png",
             new Vector2F[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
-            MoveType::SQUARE
-        );
+            MoveType::SQUARE);
+        CreateObject<Button>("optionButton", "Data/option.png",
+            new Vector2F[2]{ {10,scrY - 64 - 10.f},{0,0} }, MoveType::DEFAULT);
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");
@@ -281,7 +287,8 @@ void Game::title()
 {
     for (auto object : objectManager->objects())
     {
-        if (std::shared_ptr<Button> startButton = std::dynamic_pointer_cast<Button>(object))
+        if (std::shared_ptr<Button> startButton = std::dynamic_pointer_cast<Button>(
+        objectManager->find("titleStartButton")))
         {
             if (startButton->is_hover(_mouse))
             {
@@ -289,7 +296,7 @@ void Game::title()
                     SDL_FRect hitbox = startButton->hitbox();
                     hitbox.w = 158;
                     startButton->PushTarget({ 344,250 });
-                    startButton->SetVelocity({ -5,0 });
+                    startButton->SetVelocity({ -10,0 });
                     startButton->SetHitbox(hitbox);
                 }
             }
@@ -300,7 +307,7 @@ void Game::title()
                     SDL_FRect hitbox = startButton->hitbox();
                     hitbox.w = 128;
                     startButton->PushTarget({ 374,250 });
-                    startButton->SetVelocity({ 5,0 });
+                    startButton->SetVelocity({ 10,0 });
                     startButton->SetHitbox(hitbox);
                 }
             }
