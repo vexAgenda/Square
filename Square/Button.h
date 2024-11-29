@@ -10,8 +10,7 @@ public:
 	Button(const std::string& str);
 	virtual ~Button() override;
 	// wrapping Function
-	void  is_clicked(std::unique_ptr<class EventHandler>,
-		const Vector2& mouse);
+	bool is_hover(const Vector2& mouse);
 
 	void BindEvent(Event& e);
 private:

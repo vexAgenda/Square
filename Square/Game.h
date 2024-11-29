@@ -57,7 +57,8 @@ private:
 	{
 		auto object = CreateObject<T>(objectName, fileName, new Vector2F[2]{ pos[0],pos[1] }, mType);
 		Vector2F targetPos = pos[2];
-		object->InitMove(pos[0], pos[1], mType, &targetPos);
+		object->InitMove(pos[0], pos[1], mType);
+		object->PushTarget(targetPos);
 		return object;
 	}
 
@@ -72,5 +73,8 @@ private:
 	Uint32 curTick{};
 	GameState gameState{ GameState::START };
 	Vector2 _mouse{};
+
+	const int scrX{ 512 };
+	const int scrY{ 768 };
 };
 

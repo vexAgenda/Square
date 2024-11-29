@@ -6,7 +6,6 @@ Game::Game() :
     objectManager{ new ObjectManager{}},
     eventHandler{ new EventHandler{} }
 {
-
 }
 
 bool Game::init()
@@ -70,14 +69,14 @@ void Game::splash()
     if (splashTick == 0)
     {
         splash = CreateObject<GameObject>("splash", "Data/splash.png", 
-            new Vector2F[2]{ { 512 / 2,768 / 2 }, { 0,0 } }, MoveType::SQUARE);
+         new Vector2F[2]{ { 512 / 2,768 / 2 }, { 0,0 } }, MoveType::SQUARE);
         //set alpha to 240
         splash->InitFade(Fade::FADE_OUT, 60, 4);
     }
     splash = objectManager->find("splash");
     if (splashTick > 60)
     {
-        splash->SetMoveVelocity({ 0,(splashTick - 60) * -1 });
+        splash->SetVelocity({0,(splashTick - 60) * -1 / 4});
     }
     if (splashTick > 150)
     {
@@ -87,7 +86,6 @@ void Game::splash()
         eventHandler->PushEvent(std::make_shared<Event>(e));
         objectManager->DeleteObject(splash);
     }
-    SDL_Delay(20);
     ++splashTick;
 }
 
@@ -219,7 +217,7 @@ void Game::renderFadeIn(std::shared_ptr<GameObject> object)
     {
         SDL_SetTextureAlphaMod(object->texture(), fadeAmount * currentFade);
         object->SetCurrentFade(currentFade - 1);
-    }
+    } 
 }
 void Game::titleEnter()
 {
@@ -229,9 +227,10 @@ void Game::titleEnter()
     if (!init)
     {
         SDL_Log("Title");
-        CreateMoveTargetObject<GameObject>("titleLogo", "Data/title.png", new Vector2F[3]{ {-256,0},
-            {0,0},{10,0} }, MoveType::SQUARE);
-        auto startButton = CreateMoveTargetObject<Button>(
+        CreateMoveTargetObject<GameObject>("titleLogo",
+            "Data/title.png", new Vector2F[3]{ {-256,0},
+            {10,0},{1,0} }, MoveType::SQUARE);
+        CreateMoveTargetObject<Button>(
             "titleStartButton", "Data/startbutton.png",
             new Vector2F[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
             MoveType::SQUARE
@@ -240,40 +239,49 @@ void Game::titleEnter()
     }
     auto titleLogo = objectManager->find("titleLogo");
     auto startButton = objectManager->find("titleStartButton");
-
-    if (titleTick > 150)
+    if (titleTick < 60)
     {
-        startButton->SetMoveType(MoveType::DEFAULT);
+        titleLogo->SetVelocity({ titleTick / 4,0 });
+        startButton->SetVelocity({ 0,titleTick / 4 });
+    }
+
+    if (titleLogo->isTargetEmpty() && startButton->isTargetEmpty())
+    {
         Event e;
         e.eid = EID::TITLE;
-        eventHandler->PushEvent(std::make_shared<Event>( e));
+        eventHandler->PushEvent(std::make_shared<Event>(e));
+        SDL_Log("title entry done.");
     }
-    titleLogo->SetMoveVelocity({ titleTick / 4,0 });
-    startButton->SetMoveVelocity({ 0,titleTick / 4 });
     ++titleTick;
-
-
 }
 void Game::title()
 {
     for (auto object : objectManager->objects())
     {
-        static int buttonMovVel{ 0 };
-        if (object == objectManager->find("titleStartButton"))
+        if (std::shared_ptr<Button> startButton = std::dynamic_pointer_cast<Button>(object))
         {
-            object->ClearMoveTarget();
-            if (object->isMouseCollide(_mouse))
+            if (startButton->is_hover(_mouse))
             {
-                object->SetMoveTarget({334, 250});
-                object->SetMoveVelocity({ --buttonMovVel,0 });
+                if (startButton->isTargetEmpty())
+                {
+                    SDL_FRect hitbox = startButton->hitbox();
+                    hitbox.w = 158;
+                    startButton->PushTarget({ 344,250 });
+                    startButton->SetVelocity({ -5,0 });
+                    startButton->SetHitbox(hitbox);
+                }
             }
             else
             {
-                object->SetMoveTarget({ 374, 250 });
-                object->SetMoveVelocity({ ++buttonMovVel,0 });
+                if (startButton->isTargetEmpty())
+                {
+                    SDL_FRect hitbox = startButton->hitbox();
+                    hitbox.w = 128;
+                    startButton->PushTarget({ 374,250 });
+                    startButton->SetVelocity({ 5,0 });
+                    startButton->SetHitbox(hitbox);
+                }
             }
-            if (std::abs(buttonMovVel) > 50)
-                buttonMovVel = 0;
         }
     }
 }
@@ -285,9 +293,10 @@ void Game::update()
         deltaTime = 0.05f;
     }
     curTick = SDL_GetTicks();
-    for (auto object : objectManager->objects())
+    for (const auto& object : objectManager->objects())
     {
         object->Move(deltaTime);
+        object->MoveTargetted(deltaTime);
     }
 }
 

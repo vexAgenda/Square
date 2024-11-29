@@ -1,22 +1,13 @@
-﻿  GameObject.cpp
-D:\repos\Square\Square\GameObject.h(55,16): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
-  
-D:\repos\Square\Square\GameObject.h(56,16): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
-  
-D:\repos\Square\Square\GameObject.h(57,15): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
-  
-D:\repos\Square\Square\GameObject.h(58,15): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
-  
-D:\repos\Square\Square\GameObject.cpp(29,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(30,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(31,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(32,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(54,27): warning C4244: '인수': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(54,16): warning C4244: '인수': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(56,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(57,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Square.vcxproj -> D:\repos\Square\x64\Debug\Square.exe
+﻿  Button.cpp
+  Game.cpp
+  GameObject.cpp
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(30,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(31,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(32,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(33,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(57,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(58,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  ObjectManager.cpp
+  main.cpp
+  코드를 생성하고 있습니다...
+  Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe

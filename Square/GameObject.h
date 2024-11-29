@@ -3,6 +3,9 @@
 
 #include <SDL/SDL_image.h>
 #include <string>
+#include <memory>
+#include <queue>
+#include <functional>
 
 struct Vector2
 {
@@ -36,7 +39,7 @@ public:
 	GameObject(const std::string& name);
 	virtual ~GameObject();
 
-	bool LoadImage(SDL_Renderer* renderer,const std::string& str);
+	bool LoadImage(SDL_Renderer* renderer, const std::string& str);
 
 	Fade fadeType() { return _fadeType; }
 	void SetFadeType(Fade type) { _fadeType = type; }
@@ -46,52 +49,32 @@ public:
 	int fadeAmount() { return _fadeAmount; }
 	void InitFade(Fade fadeType, int currentFade, int amount);
 
-	//move related functions
-	void InitMove(const Vector2F& initPos,const Vector2F& velocity, const MoveType& moveType,Vector2F* target = nullptr);
-	void Move(float deltaTick);
-
-	void SetPos(int x, int y)
-	{
-		_posRect.x = x;
-		_posRect.y = y;
-		_hitbox.x = x;
-		_hitbox.y = y;
-	}
-
-	void SetMoveVelocity(const Vector2& pos)
-	{
-		_velocity = pos;
-		SDL_Log("%s's MoveVelocity : (%d,%d)", _objectName.c_str(), _velocity.x, _velocity.y);
-
-	}
-	void SetMoveType(const MoveType& moveType)
-	{
-		_moveType = moveType;
-	}
-	void SetMoveTarget(const Vector2F& target);
-	bool MoveTargetDone() { SDL_Log("%s : %f, %f ",_objectName.c_str(),_posRect.x,_posRect.y); return _targetPos->x == _posRect.x && _targetPos->y == _posRect.y; }
-
-	void ClearMoveTarget()
-	{
-		delete _targetPos;
-		_targetPos = nullptr;
-	}
-
-	SDL_Texture* texture() { return _texture;  }
+	std::string objectName() { return _objectName; }
+	SDL_Texture* texture() { return _texture; }
 	SDL_Rect imageRect() { return _imageRect; }
 	SDL_FRect posRect() { return _posRect; }
 	SDL_FRect hitbox() { return _hitbox; }
-	void SetHitbox(const SDL_FRect& frect)
+	void SetHitbox(const SDL_FRect& rect)
 	{
-		_hitbox = frect;
+		_hitbox = rect;
 	}
-	std::string objectName() { return _objectName; }
 
-	bool isMouseCollide(const Vector2& mouse);
+	//Move related function
+	void InitMove(const Vector2F& initPos, const Vector2F& velocity,const MoveType& mType);
+	void SetPos(const Vector2F& pos);
+	void SetVelocity(const Vector2& vel,bool isStatic = true);
+	void SetMoveType(const MoveType& mType);
+	void Move(float deltaTime);
+	void MoveTargetted(float deltaTime);
+	bool isTargetEmpty() { return _targetCoords.empty(); }
+	void PushTarget(const Vector2F& pos);
 
+private:
+	//move related function
+	void MoveDefault(float deltaTime);
+	void MoveExponential(float deltaTime);
 protected:
-	void MoveDefault(float deltaTick);
-	void MoveExponential(float deltaTick);
+	std::string _objectName{};
 
 	SDL_Texture* _texture{ nullptr };
 	SDL_Rect _imageRect{};
@@ -101,10 +84,12 @@ protected:
 	int _fadeAmount{ 0 };
 	int _currentFade{ 0 };
 	Fade _fadeType{ Fade::NONE };
-	// move related
-	Vector2 _velocity{ 0,0 };
-	Vector2F* _targetPos{ nullptr };
-	MoveType _moveType{ MoveType::DEFAULT };
-	std::string _objectName{};
+
+	//move related
+	bool _isTargetted{ false };
+	std::queue<Vector2F> _targetCoords;
+	std::queue<Vector2> _velocity;
+	MoveType _moveType{ MoveType::END };
+
 
 };

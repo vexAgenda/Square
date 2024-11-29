@@ -15,15 +15,12 @@ Button::~Button()
 	delete _bind;
 }
 
-void Button::is_clicked(std::unique_ptr<EventHandler> eventHandler,
-	const Vector2& mouse)
+bool Button::is_hover(const Vector2& mouse)
 {
-	if (GameObject::isMouseCollide(mouse))
-	{
-		eventHandler->PushEvent(std::make_shared<Event>(*_bind));
-		delete _bind;
-		_bind = nullptr;
-	}
+	return mouse.x >= _hitbox.x && 
+		mouse.x <= _hitbox.x +_hitbox.w && 
+		mouse.y >= _hitbox.y && 
+		mouse.y >= _hitbox.y +_hitbox.h;
 }
 
 void Button::BindEvent(Event& e)

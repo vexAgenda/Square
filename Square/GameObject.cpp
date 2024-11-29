@@ -1,8 +1,10 @@
 
 #include "GameObject.h"
 
+
 GameObject::GameObject()
 {
+	_velocity.push({0, 0});
 }
 
 GameObject::GameObject(const std::string& name)
@@ -14,7 +16,6 @@ GameObject::GameObject(const std::string& name)
 GameObject::~GameObject()
 {
 	SDL_DestroyTexture(_texture);
-	delete _targetPos;
 }
 
 bool GameObject::LoadImage(SDL_Renderer* renderer,const std::string& str)
@@ -49,94 +50,131 @@ void GameObject::InitFade(Fade fadeType, int currentFade, int amount)
 	SetFadeAmount(amount);
 }
 
-void GameObject::InitMove(const Vector2F& initPos,const Vector2F& velocity, const MoveType& moveType, Vector2F* target)
+void GameObject::InitMove(const Vector2F& initPos, const Vector2F& velocity, const MoveType& mType)
 {
-	SetPos(initPos.x, initPos.y);
+	SetPos(initPos);
 	Vector2 vel;
 	vel.x = velocity.x;
 	vel.y = velocity.y;
-	SetMoveVelocity(vel);
-	SetMoveType(moveType);
-	if (target)
-	{
-		SetMoveTarget(*target);
-	}
+	SetVelocity(vel);
+	SetMoveType(mType);
+
+}
+
+void GameObject::SetPos(const Vector2F& pos)
+{
+	_posRect.x = pos.x;
+	_posRect.y = pos.y;
+}
+
+void GameObject::SetVelocity(const Vector2& vel,bool isStatic)
+{
+	if (_velocity.empty())
+		_velocity.push(vel);
+ 	if (isStatic)
+		_velocity.front() = vel;
+	else
+		_velocity.push(vel);
+}
+
+void GameObject::SetMoveType(const MoveType& mType)
+{
+	_moveType = mType;
 }
 
 void GameObject::Move(float deltaTime)
 {
-	if (_targetPos)
-	{
-		if (_posRect.x + (_velocity.x * deltaTime) >= _targetPos->x
-			&& _posRect.y +(_velocity.y * deltaTime) >= _targetPos->y)
-		{
-			SDL_Log("%s : TargerMove Done! (%f,%f)", _objectName.c_str(), _posRect.x, _posRect.y);
-			_posRect.x = _targetPos->x;
-			_posRect.y = _targetPos->y;
-			_velocity = { 0,0 };
-			return;
-		}
-	}
-
+	if (_isTargetted)
+		return;
 	switch (_moveType)
 	{
 	case MoveType::DEFAULT:
-	{
 		MoveDefault(deltaTime);
 		break;
-	}
 	case MoveType::SQUARE:
 		MoveExponential(deltaTime);
 		break;
 	}
-
-
-
 }
 
-void GameObject::SetMoveTarget(const Vector2F& target)
+void GameObject::MoveTargetted(float deltaTime)
 {
-	SDL_Log("%s's MoveTarget : (%f,%f)", _objectName.c_str(), target.x, target.y);
-	if (_targetPos)
-		delete _targetPos;
-	_targetPos = new Vector2F{ target.x,target.y };
+	if (!_isTargetted)
+		return;
+	if (_targetCoords.empty())
+	{
+		_isTargetted = false;
+		_velocity.push({ 0,0 });
+		SDL_Log("%s : Move Done!",_objectName.c_str());
+		return;
+	}
+	Vector2F target = _targetCoords.front();
+	Vector2 velocity = _velocity.front();
+	switch (_moveType)
+	{
+	case MoveType::DEFAULT:
+		MoveDefault(deltaTime);
+		break;
+	case MoveType::SQUARE:
+		MoveExponential(deltaTime);
+		break;
+	}
+	if ((velocity.x < 0 && _posRect.x <= target.x) ||
+		(velocity.x > 0 && _posRect.x >= target.x))
+	{
+		_posRect.x = target.x;
+	}
+	if ((velocity.y < 0 && _posRect.y <= target.y) ||
+		(velocity.y > 0 && _posRect.y >= target.y))
+	{
+		_posRect.y = target.y;
+	}
+	if (_posRect.x == target.x && _posRect.y == target.y)
+	{
+		_targetCoords.pop();
+		_velocity.pop();
+	}
 }
 
-bool GameObject::isMouseCollide(const Vector2& mouse)
+void GameObject::PushTarget(const Vector2F& pos)
 {
-	return mouse.x >= _hitbox.x && mouse.x <= _hitbox.x + _hitbox.w &&
-		mouse.y >= _hitbox.y && mouse.y <= _hitbox.y + _hitbox.h;
+	if (!_isTargetted)
+		_isTargetted = true;
+	_targetCoords.push(pos);
 }
 
 void GameObject::MoveDefault(float deltaTime)
- {
-	_posRect.x += _velocity.x * deltaTime;
-	_posRect.y += _velocity.y * deltaTime;
-	_hitbox.x += _velocity.x * deltaTime;
-	_hitbox.y += _velocity.y * deltaTime;
+{
+	if (_velocity.empty())
+		return;
+	Vector2 velocity = _velocity.front();
+	_posRect.x += velocity.x * deltaTime;
+	_posRect.y += velocity.y * deltaTime;
+	_hitbox.x = _posRect.x;
+	_hitbox.y = _posRect.y;
 }
 
 void GameObject::MoveExponential(float deltaTime)
 {
-	if (_velocity.x > 0)
+	if (_velocity.empty())
+		return;
+	Vector2 velocity = _velocity.front();
+	if (velocity.x > 0)
 	{
-		_posRect.x += _velocity.x * _velocity.x * deltaTime;
-		_hitbox.x += _velocity.x * _velocity.x * deltaTime;
+		_posRect.x += velocity.x * velocity.x * deltaTime;
 	}
 	else
 	{
-		_posRect.x += _velocity.x * _velocity.x * deltaTime * -1;
-		_hitbox.x += _velocity.x * _velocity.x * deltaTime * -1;
+		_posRect.x += velocity.x * velocity.x * -1 *deltaTime;
 	}
-	if (_velocity.y > 0)
+	if (velocity.y > 0)
 	{
-		_posRect.y += _velocity.y * _velocity.y * deltaTime;
-		_hitbox.y += _velocity.y * _velocity.y * deltaTime;
+		_posRect.y += velocity.y * velocity.y * deltaTime;
 	}
 	else
 	{
-		_posRect.y += _velocity.y * _velocity.y * deltaTime * -1;
-		_hitbox.x += _velocity.x * _velocity.x * deltaTime * -1;
+		_posRect.y += velocity.y * velocity.y * -1 * deltaTime;
 	}
-
+	_hitbox.x = _posRect.x;
+	_hitbox.y = _posRect.y;
 }
