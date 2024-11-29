@@ -30,6 +30,7 @@ public:
 	void quit();
 private:
 	void event();
+	void click_event(std::shared_ptr<class Button> btn);
 	void state();
 	void input();
 	void update();

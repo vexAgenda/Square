@@ -104,7 +104,7 @@ void GameObject::MoveTargetted(float deltaTime)
 	if (_targetCoords.empty())
 	{
 		_isTargetted = false;
-		_velocity.push({ 0,0 });
+		_velocity.front() = { 0,0 };
 		SDL_Log("%s : Move Done!",_objectName.c_str());
 		return;
 	}
@@ -132,7 +132,8 @@ void GameObject::MoveTargetted(float deltaTime)
 	if (_posRect.x == target.x && _posRect.y == target.y)
 	{
 		_targetCoords.pop();
-		_velocity.pop();
+		if(_velocity.size() > 1)
+			_velocity.pop();
 	}
 }
 

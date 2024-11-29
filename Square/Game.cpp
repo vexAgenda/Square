@@ -19,8 +19,8 @@ bool Game::init()
     }
     //create window
     window = SDL_CreateWindow("Square ManiaQ",
-        100, 100,
-        512, 768, SDL_WINDOW_OPENGL);
+        100, 50,
+        scrX, scrY, SDL_WINDOW_OPENGL);
 
     if (!window)
     {
@@ -37,9 +37,9 @@ bool Game::init()
         return false;
     }
     // set program icon
-    SDL_Surface* icon= IMG_Load("Data/icon.png");
+    SDL_Surface* icon = IMG_Load("Data/icon.png");
     SDL_SetWindowIcon(window, icon);
-    
+
 
     //init image
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
@@ -68,15 +68,15 @@ void Game::splash()
     std::shared_ptr<GameObject> splash{ nullptr };
     if (splashTick == 0)
     {
-        splash = CreateObject<GameObject>("splash", "Data/splash.png", 
-         new Vector2F[2]{ { 512 / 2,768 / 2 }, { 0,0 } }, MoveType::SQUARE);
+        splash = CreateObject<GameObject>("splash", "Data/splash.png",
+            new Vector2F[2]{ { scrX / 2.f,scrY / 2.f }, { 0,0 } }, MoveType::SQUARE);
         //set alpha to 240
         splash->InitFade(Fade::FADE_OUT, 60, 4);
     }
     splash = objectManager->find("splash");
     if (splashTick > 60)
     {
-        splash->SetVelocity({0,(splashTick - 60) * -1 / 4});
+        splash->SetVelocity({ 0,(splashTick - 60) * -1 / 4 });
     }
     if (splashTick > 150)
     {
@@ -128,6 +128,14 @@ void Game::event()
     }
 }
 
+void Game::click_event(std::shared_ptr<Button> btn)
+{
+    if (btn == objectManager->find("titleStartButton"))
+    {
+        SDL_Log("hi!");
+    }
+}
+
 void Game::state()
 {
     switch (gameState)
@@ -155,6 +163,21 @@ void Game::input()
         case SDL_QUIT:
             bRun = false;
             quit();
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            switch (event.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+            {
+                for (auto object : objectManager->objects())
+                {
+                    if (auto button = std::dynamic_pointer_cast<Button>(object))
+                    {
+                        click_event(button);
+                    }
+                }
+            }
+            }
             break;
         }
     }
@@ -262,8 +285,6 @@ void Game::title()
         {
             if (startButton->is_hover(_mouse))
             {
-                SDL_Log("mouse touched! %d, %d", _mouse.x, _mouse.y);
-                if (startButton->isTargetEmpty())
                 {
                     SDL_FRect hitbox = startButton->hitbox();
                     hitbox.w = 158;
