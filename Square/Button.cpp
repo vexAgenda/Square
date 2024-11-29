@@ -20,7 +20,7 @@ bool Button::is_hover(const Vector2& mouse)
 	return mouse.x >= _hitbox.x && 
 		mouse.x <= _hitbox.x +_hitbox.w && 
 		mouse.y >= _hitbox.y && 
-		mouse.y >= _hitbox.y +_hitbox.h;
+		mouse.y <= _hitbox.y +_hitbox.h;
 }
 
 void Button::BindEvent(Event& e)

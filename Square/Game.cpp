@@ -262,6 +262,7 @@ void Game::title()
         {
             if (startButton->is_hover(_mouse))
             {
+                SDL_Log("mouse touched! %d, %d", _mouse.x, _mouse.y);
                 if (startButton->isTargetEmpty())
                 {
                     SDL_FRect hitbox = startButton->hitbox();
