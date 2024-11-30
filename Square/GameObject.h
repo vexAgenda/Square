@@ -75,6 +75,7 @@ private:
 	void MoveExponential(float deltaTime);
 protected:
 	std::string _objectName{};
+	std::string _fileName{};
 
 	SDL_Texture* _texture{ nullptr };
 	SDL_Rect _imageRect{};

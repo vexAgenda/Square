@@ -136,7 +136,7 @@ void Game::click_event(std::shared_ptr<Button> btn)
     }
     else if (btn == objectManager->find("optionButton"))
     {
-        SDL_Log("hi!");
+        SDL_Log("options");
     }
 }
 
@@ -258,12 +258,14 @@ void Game::titleEnter()
         CreateMoveTargetObject<GameObject>("titleLogo",
             "Data/title.png", new Vector2F[3]{ {-256,0},
             {10,0},{1,0} }, MoveType::SQUARE);
+        CreateObject<GameObject>("titleStartButtonOverlay", "Data/null.png",
+            new Vector2F[2]{ {374,250},{0,0} }, MoveType::DEFAULT);
         CreateMoveTargetObject<Button>(
             "titleStartButton", "Data/startbutton.png",
             new Vector2F[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
             MoveType::SQUARE);
         CreateObject<Button>("optionButton", "Data/option.png",
-            new Vector2F[2]{ {10,scrY - 64 - 10.f},{0,0} }, MoveType::DEFAULT);
+            new Vector2F[2]{ {10,scrY - 64 - 10.f},{0,0} }, MoveType::SQUARE);
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");
@@ -279,36 +281,51 @@ void Game::titleEnter()
         Event e;
         e.eid = EID::TITLE;
         eventHandler->PushEvent(std::make_shared<Event>(e));
+        startButton->SetMoveType(MoveType::DEFAULT);
         SDL_Log("title entry done.");
     }
     ++titleTick;
 }
 void Game::title()
 {
+    bool isStartButtonActive{ false };
     for (auto object : objectManager->objects())
     {
         if (std::shared_ptr<Button> startButton = std::dynamic_pointer_cast<Button>(
         objectManager->find("titleStartButton")))
         {
+            auto startButtonOverlay = objectManager->find("titleStartButtonOverlay");
             if (startButton->is_hover(_mouse))
             {
                 {
-                    SDL_FRect hitbox = startButton->hitbox();
-                    hitbox.w = 158;
-                    startButton->PushTarget({ 344,250 });
-                    startButton->SetVelocity({ -10,0 });
-                    startButton->SetHitbox(hitbox);
+                    if(startButton->isTargetEmpty() && startButtonOverlay->isTargetEmpty()){
+                        startButton->LoadImage(renderer,"Data/startbuttonActive.png");
+                        startButtonOverlay->LoadImage(renderer, "Data/startbuttonActiveOverlay.png");
+                        SDL_FRect hitbox = startButton->hitbox();
+                        hitbox.w = 158;
+                        startButton->PushTarget({ 344,250 });
+                        startButtonOverlay->PushTarget({ 344,250 });
+                        startButton->SetVelocity({ -10,0 });
+                        startButtonOverlay->SetVelocity({ -10,0});
+                        startButton->SetHitbox(hitbox);
+                        isStartButtonActive = true;
+                    }
                 }
             }
             else
             {
-                if (startButton->isTargetEmpty())
+                if (startButton->isTargetEmpty() && startButtonOverlay->isTargetEmpty())
                 {
+                    startButton->LoadImage(renderer, "Data/startbutton.png");
+                    startButtonOverlay->LoadImage(renderer, "Data/null.png");
                     SDL_FRect hitbox = startButton->hitbox();
                     hitbox.w = 128;
                     startButton->PushTarget({ 374,250 });
                     startButton->SetVelocity({ 10,0 });
+                    startButtonOverlay->PushTarget({ 374,250 });
+                    startButtonOverlay->SetVelocity({ 10,0 });
                     startButton->SetHitbox(hitbox);
+                    isStartButtonActive = false;
                 }
             }
         }
