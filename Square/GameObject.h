@@ -68,6 +68,7 @@ public:
 	void MoveTargetted(float deltaTime);
 	bool isTargetEmpty() { return _targetCoords.empty(); }
 	void PushTarget(const Vector2F& pos);
+	bool is_hover(const Vector2& mouse);
 
 private:
 	//move related function

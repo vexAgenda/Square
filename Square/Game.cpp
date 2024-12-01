@@ -177,8 +177,8 @@ void Game::input()
                 {
                     if (auto button = std::dynamic_pointer_cast<Button>(object))
                     {
-                        if(button->is_hover(_mouse))
-                            click_event(button);
+                        if (button->is_hover(_mouse))
+                            button->ClickEvent(eventHandler);
                     }
                 }
             }

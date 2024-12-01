@@ -147,6 +147,16 @@ void GameObject::PushTarget(const Vector2F& pos)
 	_targetCoords.push(pos);
 }
 
+bool GameObject::is_hover(const Vector2& mouse)
+{
+
+	return mouse.x >= _hitbox.x &&
+		mouse.x <= _hitbox.x + _hitbox.w &&
+		mouse.y >= _hitbox.y &&
+		mouse.y <= _hitbox.y + _hitbox.h;
+
+}
+
 void GameObject::MoveDefault(float deltaTime)
 {
 	if (_velocity.empty())

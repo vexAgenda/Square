@@ -15,17 +15,17 @@ Button::~Button()
 	delete _bind;
 }
 
-bool Button::is_hover(const Vector2& mouse)
-{
-	return mouse.x >= _hitbox.x && 
-		mouse.x <= _hitbox.x +_hitbox.w && 
-		mouse.y >= _hitbox.y && 
-		mouse.y <= _hitbox.y +_hitbox.h;
-}
-
 void Button::BindEvent(Event& e)
 {
 	if (_bind)
 		delete _bind;
 	_bind = &e;
+}
+
+void Button::ClickEvent(std::unique_ptr<class EventHandler>& eventHandler)
+{
+	if (_bind)
+	{
+		eventHandler->PushEvent(std::make_shared<Event>(*_bind));
+	}
 }
