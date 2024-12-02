@@ -1,7 +1,7 @@
 ﻿  Game.cpp
-C:\Users\pleas\source\repos\Square\Square\TextButton.h(4,8): warning C4099: 'Text': 처음에는 'class'을(를) 사용하여 형식 이름을 표시했는데 이제는 'struct'을(를) 사용하여 표시합니다.
+C:\Users\pleas\source\repos\Square\Square\TextButton.h(5,8): warning C4099: 'Text': 처음에는 'class'을(를) 사용하여 형식 이름을 표시했는데 이제는 'struct'을(를) 사용하여 표시합니다.
   (소스 파일 'Game.cpp'을(를) 컴파일하는 중)
-      C:\Users\pleas\source\repos\Square\Square\TextButton.h(4,8):
+      C:\Users\pleas\source\repos\Square\Square\TextButton.h(5,8):
       'Text' 선언을 참조하십시오.
   
   Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe

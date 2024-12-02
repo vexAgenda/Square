@@ -210,7 +210,19 @@ void Game::input()
                         {
                             object->InitFade(Fade::FADE_IN, 60, 6);
                             objectManager->DeleteObject(object);
+                            for (int i = 0; i < stageCleared.size(); ++i)
+                            {
+                                auto object = objectManager->find("stageButton" + std::to_string(i + 1));
+                                objectManager->DeleteObject(object);
+                            }
                             stageSelectCalled = false;
+                        }
+                    }
+                    if (objectManager->name_contains(object,"stageButton"))
+                    {
+                        if (object->is_hover(_mouse))
+                        {
+                            SDL_Log("%d", std::stoi(object->objectName().substr(11)));
                         }
                     }
                 }
@@ -362,6 +374,18 @@ void Game::title()
                     startButton->SetHitbox(hitbox);
                     isStartButtonActive = false;
                 }
+            }
+        }
+        if (objectManager->name_contains(object,"stageButton"))
+        {
+            auto stageButton = std::dynamic_pointer_cast<TextButton>(object);
+            if (object->is_hover(_mouse))
+            {
+                stageButton->SetColor(renderer,{ 255,0,0 });
+            }
+            else
+            {
+                stageButton->SetColor(renderer,{ 255,255,255 });
             }
         }
     }

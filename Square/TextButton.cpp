@@ -14,14 +14,14 @@ bool TextButton::LoadImage(SDL_Renderer* renderer, const std::string& str)
 	{
 		return false;
 	}
-	TTF_Font* font = TTF_OpenFont(str.c_str(), _text._ptSize);
-	if (!font)
+	_font = TTF_OpenFont(str.c_str(), _text._ptSize);
+	if (!_font)
 	{
 		SDL_Log("%s does not exist!", str.c_str());
 		return false;
 	}
 	_fileName = str;
-	SDL_Surface* _surface = TTF_RenderText_Solid(font, _text._msg.c_str(), _text._fontColor);
+	SDL_Surface* _surface = TTF_RenderText_Solid(_font, _text._msg.c_str(), _text._fontColor);
 	_imageRect = _surface->clip_rect;
 	_posRect.w = _surface->clip_rect.w;
 	_posRect.h = _surface->clip_rect.h;
@@ -34,6 +34,23 @@ bool TextButton::LoadImage(SDL_Renderer* renderer, const std::string& str)
 
 	}
 	SDL_FreeSurface(_surface);
-	TTF_CloseFont(font);
 	return true;
+}
+
+void TextButton::SetColor(SDL_Renderer* renderer ,const SDL_Color& color)
+{
+	SDL_DestroyTexture(_texture);
+	_text._fontColor = color;
+	SDL_Surface* _surface = TTF_RenderText_Solid(_font, _text._msg.c_str(), _text._fontColor);
+	_imageRect = _surface->clip_rect;
+	_posRect.w = _surface->clip_rect.w;
+	_posRect.h = _surface->clip_rect.h;
+	_hitbox = _posRect;
+	_texture = SDL_CreateTextureFromSurface(renderer, _surface);
+	if (_texture == NULL)
+	{
+		SDL_Log("Failed to Create Texture : %s", SDL_GetError());
+
+	}
+	SDL_FreeSurface(_surface);
 }
