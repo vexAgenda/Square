@@ -15,11 +15,13 @@ Button::~Button()
 	delete _bind;
 }
 
-void Button::BindEvent(Event& e)
+void Button::BindEvent(Event* e)
 {
+	if (!e)
+		return;
 	if (_bind)
 		delete _bind;
-	_bind = &e;
+	_bind = e;
 }
 
 void Button::ClickEvent(std::unique_ptr<class EventHandler>& eventHandler)

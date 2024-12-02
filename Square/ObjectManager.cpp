@@ -31,3 +31,9 @@ std::shared_ptr<GameObject> ObjectManager::find(const std::string& objectName)
 	}
 	return nullptr;
 }
+
+bool ObjectManager::name_contains(std::shared_ptr<GameObject> object, const std::string& name)
+{
+	return (object->objectName().contains(name));
+}
+

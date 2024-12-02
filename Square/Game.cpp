@@ -124,21 +124,24 @@ void Game::event()
         case EID::TITLE:
             gameState = GameState::TITLE;
             break;
+        case EID::TITLE_STAGE_SELECT_CALLED:
+        {
+            if (!stageSelectCalled)
+            {
+                auto stageSelect = CreateObject<GameObject>("stageSelect"
+                    , "Data/stagebackground.png",
+                    new Vector2F[2]{ {scrX / 2.f - 150,scrY / 2.f - 120},
+                    {0,0} }, MoveType::DEFAULT);
+                stageSelect->InitFade(Fade::FADE_OUT, 60, 6);
+                stageSelectCalled = true;
+            }
+            break;
+        }
         }
     }
 }
 
-void Game::click_event(std::shared_ptr<Button> btn)
-{
-    if (btn == objectManager->find("titleStartButton"))
-    {
-        SDL_Log("hi!");
-    }
-    else if (btn == objectManager->find("optionButton"))
-    {
-        SDL_Log("options");
-    }
-}
+
 
 void Game::state()
 {
@@ -178,7 +181,20 @@ void Game::input()
                     if (auto button = std::dynamic_pointer_cast<Button>(object))
                     {
                         if (button->is_hover(_mouse))
+                        {
                             button->ClickEvent(eventHandler);
+                        }
+                    }
+
+                    if (auto object = objectManager->find("stageSelect"))
+                    {
+                        if (!object->is_hover(_mouse) && stageSelectCalled)
+                        {
+                            object->InitFade(Fade::FADE_IN, 60, 6);
+                            objectManager->DeleteObject(object);
+                            for()
+                            stageSelectCalled = false;
+                        }
                     }
                 }
             }
@@ -230,7 +246,7 @@ void Game::renderFadeOut(std::shared_ptr<GameObject> object)
     if (object->currentFade() > 0)
     {
         SDL_SetTextureAlphaMod(object->texture(), 255 - fadeAmount * currentFade);
-        object->SetCurrentFade(currentFade - 1);
+        object->SetCurrentFade(currentFade - fadeAmount);
     }
 }
 void Game::renderFadeIn(std::shared_ptr<GameObject> object)
@@ -244,7 +260,7 @@ void Game::renderFadeIn(std::shared_ptr<GameObject> object)
     if (object->currentFade() > 0)
     {
         SDL_SetTextureAlphaMod(object->texture(), fadeAmount * currentFade);
-        object->SetCurrentFade(currentFade - 1);
+        object->SetCurrentFade(currentFade - fadeAmount);
     } 
 }
 void Game::titleEnter()
@@ -256,24 +272,24 @@ void Game::titleEnter()
     {
         SDL_Log("Title");
         CreateMoveTargetObject<GameObject>("titleLogo",
-            "Data/title.png", new Vector2F[3]{ {-256,0},
-            {10,0},{1,0} }, MoveType::SQUARE);
+            "Data/title.png", new Vector2F[3]{ {10,896},
+            {0,-10},{10,0} }, MoveType::SQUARE);
         CreateObject<GameObject>("titleStartButtonOverlay", "Data/null.png",
-            new Vector2F[2]{ {374,250},{0,0} }, MoveType::DEFAULT);
+            new Vector2F[2]{ {374,250},{0,0} }, MoveType::SQUARE);
         CreateMoveTargetObject<Button>(
             "titleStartButton", "Data/startbutton.png",
-            new Vector2F[3]{ { 374,-29 }, { 0,1 },{ 374,250 } },
+            new Vector2F[3]{ { 374,796 }, { 0,-1 },{ 374,250 } },
             MoveType::SQUARE);
         CreateObject<Button>("optionButton", "Data/option.png",
             new Vector2F[2]{ {10,scrY - 64 - 10.f},{0,0} }, MoveType::SQUARE);
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");
-    auto startButton = objectManager->find("titleStartButton");
+    auto startButton = std::dynamic_pointer_cast<Button>(objectManager->find("titleStartButton"));
     if (titleTick < 60)
     {
-        titleLogo->SetVelocity({ titleTick / 4,0 });
-        startButton->SetVelocity({ 0,titleTick / 4 });
+        titleLogo->SetVelocity({ 0,titleTick /3 * -1 });
+        startButton->SetVelocity({ 0,titleTick / 3 * - 1 });
     }
 
     if (titleLogo->isTargetEmpty() && startButton->isTargetEmpty())
@@ -281,8 +297,10 @@ void Game::titleEnter()
         Event e;
         e.eid = EID::TITLE;
         eventHandler->PushEvent(std::make_shared<Event>(e));
-        startButton->SetMoveType(MoveType::DEFAULT);
         SDL_Log("title entry done.");
+        Event* ce = { new Event };
+        ce->eid = EID::TITLE_STAGE_SELECT_CALLED;
+        startButton->BindEvent(ce);
     }
     ++titleTick;
 }
@@ -302,7 +320,7 @@ void Game::title()
                         startButton->LoadImage(renderer,"Data/startbuttonActive.png");
                         startButtonOverlay->LoadImage(renderer, "Data/startbuttonActiveOverlay.png");
                         SDL_FRect hitbox = startButton->hitbox();
-                        hitbox.w = 158;
+                        hitbox.w = 200;
                         startButton->PushTarget({ 344,250 });
                         startButtonOverlay->PushTarget({ 344,250 });
                         startButton->SetVelocity({ -10,0 });
