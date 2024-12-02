@@ -17,6 +17,7 @@ enum class GameState
 	TITLE,
 	TITLE_ENTER,
 	TITLE_END,
+	RUN,
 	END
 };
 
@@ -41,6 +42,7 @@ private:
 
 	void titleEnter();
 	void title();
+	void titleEnd();
 	// object-related
 	template <typename T>
 	std::shared_ptr<T> CreateObject(const std::string& objectName, const std::string&
@@ -98,5 +100,9 @@ private:
 		false,false,false,false,false,false,
 		false,false,false,false,false,false,
 	};
+
+	const double rad_MAX = 2 * M_PI;
+	const double rad_MIN = 0;
+	int mapIndex = 0;
 };
 

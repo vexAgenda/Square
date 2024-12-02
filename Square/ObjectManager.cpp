@@ -20,6 +20,16 @@ void ObjectManager::DeleteObject(std::shared_ptr<GameObject> object)
 	,object),_objects.end());
 }
 
+void ObjectManager::Flush()
+{
+	if (_objects.empty())
+		return;
+	for (auto object : _objects)
+	{
+		DeleteObject(object);
+	}
+}
+
 std::shared_ptr<GameObject> ObjectManager::find(const std::string& objectName)
 {
 	for (auto object : _objects)

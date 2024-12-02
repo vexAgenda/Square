@@ -149,12 +149,18 @@ void Game::event()
                             new Vector2F[2]{ {scrX / 2.f - 150 + 50 * (i % 6) ,scrY / 2.f - 150 + 5 + 50 * (i / 6)},{0,0}},
                             MoveType::DEFAULT
                         );
+                    Event* e = new Event;
+                    e->eid = EID::TITLE_END;
+                    stageButton->BindEvent(e);
                 }
                 stageSelect->InitFade(Fade::FADE_OUT, 60, 6);
                 stageSelectCalled = true;
             }
             break;
         }
+        case EID::TITLE_END:
+            gameState = GameState::TITLE_END;
+            break;
         }
     }
 }
@@ -173,6 +179,9 @@ void Game::state()
         break;
     case GameState::TITLE:
         title();
+        break;
+    case GameState::TITLE_END:
+        titleEnd();
         break;
     }
 }
@@ -222,7 +231,8 @@ void Game::input()
                     {
                         if (object->is_hover(_mouse))
                         {
-                            SDL_Log("%d", std::stoi(object->objectName().substr(11)));
+                            mapIndex = std::stoi(object->objectName().substr(11));
+                            SDL_Log("%d", mapIndex);
                         }
                     }
                 }
@@ -389,6 +399,10 @@ void Game::title()
             }
         }
     }
+}
+void Game::titleEnd()
+{
+    objectManager->Flush();
 }
 void Game::update()
 {
