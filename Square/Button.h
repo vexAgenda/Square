@@ -14,7 +14,7 @@ public:
 
 	void BindEvent(Event* e);
 	void ClickEvent(std::unique_ptr<EventHandler>&);
-private:
+protected:
 	Event* _bind{ nullptr };
 };
 

@@ -1,6 +1,8 @@
 
 #include "Game.h"
 #include "Button.h"
+#include "TextButton.h"
+#include "SDL/SDL_ttf.h"
 
 Game::Game() :
     objectManager{ new ObjectManager{}},
@@ -18,7 +20,7 @@ bool Game::init()
         return false;
     }
     //create window
-    window = SDL_CreateWindow("Square ManiaQ",
+    window = SDL_CreateWindow("Square Maniac",
         100, 50,
         scrX, scrY, SDL_WINDOW_OPENGL);
 
@@ -36,10 +38,6 @@ bool Game::init()
         SDL_Log("failed to create renderer: %s", SDL_GetError());
         return false;
     }
-    // set program icon
-    SDL_Surface* icon = IMG_Load("Data/icon.png");
-    SDL_SetWindowIcon(window, icon);
-
 
     //init image
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
@@ -47,7 +45,15 @@ bool Game::init()
         SDL_Log("failed to init image : %s", SDL_GetError());
         return false;
     }
+    // set program icon
+    SDL_Surface* icon = IMG_Load("Data/icon.png");
+    SDL_SetWindowIcon(window, icon);
 
+    //init TTF
+    if (TTF_Init() < 0)
+    {
+        SDL_Log("TTF init failed! : %s", SDL_GetError());
+    }
     // Set Background to white
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
@@ -130,8 +136,20 @@ void Game::event()
             {
                 auto stageSelect = CreateObject<GameObject>("stageSelect"
                     , "Data/stagebackground.png",
-                    new Vector2F[2]{ {scrX / 2.f - 150,scrY / 2.f - 120},
+                    new Vector2F[2]{ {scrX / 2.f - 150,scrY / 2.f - 150},
                     {0,0} }, MoveType::DEFAULT);
+
+                for (int i = 0; i < stageCleared.size(); ++i)
+                {
+                    auto stageButton = CreateTextObject<TextButton>
+                        (
+                            "stageButton" + std::to_string(1 + i),
+                            "Data/Fonts/font.ttf",
+                            { 36,{255,255,255},std::to_string(1 + i) },
+                            new Vector2F[2]{ {scrX / 2.f - 150 + 50 * (i % 6) ,scrY / 2.f - 150 + 5 + 50 * (i / 6)},{0,0}},
+                            MoveType::DEFAULT
+                        );
+                }
                 stageSelect->InitFade(Fade::FADE_OUT, 60, 6);
                 stageSelectCalled = true;
             }
@@ -192,7 +210,6 @@ void Game::input()
                         {
                             object->InitFade(Fade::FADE_IN, 60, 6);
                             objectManager->DeleteObject(object);
-                            for()
                             stageSelectCalled = false;
                         }
                     }

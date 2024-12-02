@@ -7,6 +7,7 @@
 
 #include "ObjectManager.h"
 #include "EventHandler.h"
+class Text;
 
 enum class GameState
 {
@@ -61,6 +62,18 @@ private:
 		object->PushTarget(targetPos);
 		return object;
 	}
+	template <typename T>
+	std::shared_ptr<T> CreateTextObject(const std::string& objectName, const std::string&
+		fileName,const Text& text, Vector2F* pos, MoveType mType)
+	{
+
+		auto object = std::make_shared<T>(objectName);
+		object->PreloadInit(text);
+		objectManager->AddObject(object);
+		object->LoadImage(renderer, fileName);
+		object->InitMove(pos[0], pos[1], mType);
+		return object;
+	}
 
 	SDL_Window* window{};
 	SDL_Renderer* renderer{};
@@ -78,5 +91,12 @@ private:
 	const int scrY{ 768 };
 
 	bool stageSelectCalled{ false };
+	std::vector<bool> stageCleared = {
+		true,false,false,false,false,false,
+		false,false,false,false,false,false,
+		false,false,false,false,false,false,
+		false,false,false,false,false,false,
+		false,false,false,false,false,false,
+	};
 };
 

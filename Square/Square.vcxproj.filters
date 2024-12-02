@@ -36,6 +36,9 @@
     <ClCompile Include="Button.cpp">
       <Filter>GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="TextButton.cpp">
+      <Filter>GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -51,6 +54,9 @@
       <Filter>GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Button.h">
+      <Filter>GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="TextButton.h">
       <Filter>GameObjects</Filter>
     </ClInclude>
   </ItemGroup>

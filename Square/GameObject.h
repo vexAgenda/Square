@@ -39,7 +39,7 @@ public:
 	GameObject(const std::string& name);
 	virtual ~GameObject();
 
-	bool LoadImage(SDL_Renderer* renderer, const std::string& str);
+	virtual bool LoadImage(SDL_Renderer* renderer, const std::string& str);
 
 	Fade fadeType() { return _fadeType; }
 	void SetFadeType(Fade type) { _fadeType = type; }
