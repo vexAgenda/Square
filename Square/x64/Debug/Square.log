@@ -1,7 +1,12 @@
-﻿  Game.cpp
-C:\Users\pleas\source\repos\Square\Square\TextButton.h(5,8): warning C4099: 'Text': 처음에는 'class'을(를) 사용하여 형식 이름을 표시했는데 이제는 'struct'을(를) 사용하여 표시합니다.
-  (소스 파일 'Game.cpp'을(를) 컴파일하는 중)
-      C:\Users\pleas\source\repos\Square\Square\TextButton.h(5,8):
-      'Text' 선언을 참조하십시오.
-  
-  Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe
+﻿  GameObject.cpp
+D:\repos\Square\Square\GameObject.cpp(35,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\Square\Square\GameObject.cpp(36,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\Square\Square\GameObject.cpp(60,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\Square\Square\GameObject.cpp(61,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  TextButton.cpp
+D:\repos\Square\Square\TextButton.cpp(26,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\Square\Square\TextButton.cpp(27,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\Square\Square\TextButton.cpp(46,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\Square\Square\TextButton.cpp(47,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
+  Square.vcxproj -> D:\repos\Square\x64\Debug\Square.exe
