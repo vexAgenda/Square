@@ -33,8 +33,9 @@ struct ObjectBuffer
 	std::string _text;
 	Vector2F _originPos;
 	Vector2F _velocity;
-	Vector2F _targetPos;
-	MoveType mType;
+	bool hasTarget{ false };
+	Vector2F _targetPos{ 0,1 };
+	std::string _mType{};
 };
 
 class Game

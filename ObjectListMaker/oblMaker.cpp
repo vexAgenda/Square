@@ -20,13 +20,14 @@ struct Vector2F
 {
 	float x;
 	float y;
-	friend std::istream& operator>>(std::istream& in, Vector2F& vec)
+
+	friend std::ostream& operator<<(std::ostream& os, Vector2F& vec)
 	{
-		return in >> vec.x >> vec.y;
+		return os << vec.x << " " << vec.y << '\n';
 	}
-	friend std::ostream& operator<< (std::ostream& out, Vector2F vec)
+	friend std::istream& operator>>(std::istream& is, Vector2F& vec)
 	{
-		return out << "{" << vec.x << "," << vec.y << "}";
+		return is >> vec.x >> vec.y;
 	}
 };
 
@@ -41,17 +42,12 @@ struct ObjectBuffer
 	bool hasTarget{ false };
 	Vector2F _targetPos{ 0,1 };
 	std::string _mType{};
-
-	friend std::istream& operator>>(std::istream& in, ObjectBuffer& buffer)
+	friend std::ostream& operator<<(std::ostream& os, ObjectBuffer& buffer)
 	{
-		return in >> buffer._type >> buffer._objectName >> buffer._fileName >> buffer._text
-			>> buffer._originPos >> buffer._velocity >> buffer.hasTarget >>buffer._targetPos >> buffer._mType;
-	}
-
-	friend std::ostream& operator<<(std::ostream& out, ObjectBuffer& buffer)
-	{
-		return out << " " << buffer._type << " " << buffer._objectName << " " << buffer._fileName << " " << buffer._text
-			<< " " << buffer._originPos << " " << buffer._velocity << " "<< buffer.hasTarget << " " << buffer._targetPos<< " " << buffer._mType;
+		return  os << buffer._type << '\n' << buffer._objectName << '\n'
+			<< buffer._fileName << '\n' << buffer._text << '\n' <<
+			buffer._originPos << buffer._velocity << buffer.hasTarget << '\n'
+			<< buffer._targetPos << buffer._mType << '\n';
 	}
 };
 
@@ -67,8 +63,11 @@ int main(void)
 
 		for (int i = 0; i < objects.size(); ++i)
 		{
-			std::cout << "[" << i << "]. " << objects[i]._type << " " << objects[i]._objectName << " " << objects[i]._fileName
-				<< objects[i]._text << " " << objects[i]._originPos << " " << objects[i]._velocity<< " " << objects[i]._targetPos
+			std::cout << "[" << i << "]. " << objects[i]._type << " " << objects[i]._objectName << " " << objects[i]._fileName << " "
+				<< objects[i]._text << " {" << objects[i]._originPos.x << ", " << objects[i]._originPos.y << "}"
+				<< " {" << objects[i]._velocity.x << ", " << objects[i]._velocity.y << "}"
+				<< " " << objects[i].hasTarget
+				<< " {" << objects[i]._targetPos.x << ", " << objects[i]._targetPos.y << "} "
 				<<" " << objects[i]._mType <<'\n';
 		}
 		std::cout << "======================" << '\n';
@@ -125,6 +124,7 @@ int main(void)
 			std::cin >> saveLoc;
 			saveLoc += ".obl";
 			std::ofstream out{ saveLoc,std::ios_base::binary };
+			out << objects.size();
 			for (auto& object : objects)
 			{
 				out << object;
@@ -138,16 +138,24 @@ int main(void)
 			std::cin >> fileLoc;
 			fileLoc += ".obl";
 			std::ifstream in{ fileLoc,std::ios_base::binary };
-
-			if (in)
+			size_t size;
+			in >> size;
+			objects.resize(size);
+			for (int i = 0; i < objects.size(); ++i)
 			{
-				ObjectBuffer object;
-				while (!in.eof())
-				{
-					in >> object;
-					objects.push_back(object);
-				}
+				std::getline(in, objects[i]._type);
+				std::getline(in, objects[i]._objectName);
+				std::getline(in, objects[i]._fileName);
+				std::getline(in, objects[i]._text);
+				in >> objects[i]._originPos.x >> objects[i]._originPos.y;
+				in >> objects[i]._velocity.x >> objects[i]._velocity.y;
+				in >> objects[i].hasTarget;
+				in >> objects[i]._targetPos.x >> objects[i]._targetPos.y;
+				in.ignore();
+				std::getline(in, objects[i]._mType);
+
 			}
+
 		}
 		system("timeout -1");
 		system("cls");

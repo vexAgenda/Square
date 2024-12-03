@@ -119,6 +119,7 @@ void Game::run()
         input();
         update();
         render();
+        SDL_Delay(10);
     }
 }
 

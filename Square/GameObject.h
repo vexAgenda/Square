@@ -17,6 +17,10 @@ struct Vector2F
 {
 	float x;
 	float y;
+	friend std::istream& operator>>(std::istream& is, Vector2F& vec)
+	{
+		return is >> vec.x >> vec.y;
+	}
 };
 
 enum class MoveType
