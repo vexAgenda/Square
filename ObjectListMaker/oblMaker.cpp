@@ -16,6 +16,20 @@ enum MoveType
 	MT_SQUARE,
 	MT_END
 };
+struct Vector2
+{
+	int x;
+	int y;
+	friend std::ostream& operator<<(std::ostream& os, Vector2& vec)
+	{
+		return os << vec.x << " " << vec.y << '\n';
+	}
+	friend std::istream& operator>>(std::istream& is, Vector2& vec)
+	{
+		return is >> vec.x >> vec.y;
+	}
+};
+
 struct Vector2F
 {
 	float x;
@@ -31,6 +45,23 @@ struct Vector2F
 	}
 };
 
+struct Color
+{
+	int r{};
+	int g{};
+	int b{};
+	int a = 255;
+
+	friend std::ostream& operator<<(std::ostream& os, Color& color)
+	{
+		return os << color.r << " " << color.g << " " << color.b << " " << color.a << '\n';
+	}
+	friend std::istream& operator>>(std::istream& is, Color& color)
+	{
+		return is >> color.r >> color.g >> color.b >> color.a;
+	}
+};
+
 struct ObjectBuffer
 {
 	std::string _type{};
@@ -41,13 +72,17 @@ struct ObjectBuffer
 	Vector2F _velocity{ 0,0 };
 	bool hasTarget{ false };
 	Vector2F _targetPos{ 0,1 };
+	bool isRect{ false };
+	Vector2 _widthHeight{};
+	Color _rectColor{};
 	std::string _mType{};
 	friend std::ostream& operator<<(std::ostream& os, ObjectBuffer& buffer)
 	{
 		return  os << buffer._type << '\n' << buffer._objectName << '\n'
 			<< buffer._fileName << '\n' << buffer._text << '\n' <<
 			buffer._originPos << buffer._velocity << buffer.hasTarget << '\n'
-			<< buffer._targetPos << buffer._mType << '\n';
+			<< buffer._targetPos << buffer.isRect << '\n' << buffer._widthHeight << buffer._rectColor 
+			<< buffer._mType << '\n';
 	}
 };
 
@@ -67,8 +102,10 @@ int main(void)
 				<< objects[i]._text << " {" << objects[i]._originPos.x << ", " << objects[i]._originPos.y << "}"
 				<< " {" << objects[i]._velocity.x << ", " << objects[i]._velocity.y << "}"
 				<< " " << objects[i].hasTarget
-				<< " {" << objects[i]._targetPos.x << ", " << objects[i]._targetPos.y << "} "
-				<<" " << objects[i]._mType <<'\n';
+				<< " {" << objects[i]._targetPos.x << ", " << objects[i]._targetPos.y << "}"
+				<< objects[i].isRect << " {" << objects[i]._widthHeight.x << ", " << objects[i]._widthHeight.y << "}"
+				<< " {"<< objects[i]._rectColor.r << ", " << objects[i]._rectColor.g << ", " << objects[i]._rectColor.b << ", " << objects[i]._rectColor.a << "}"
+				<< " " << objects[i]._mType << '\n';
 		}
 		std::cout << "======================" << '\n';
 		std::cout << "> ";
@@ -112,6 +149,29 @@ int main(void)
 					break;
 				}
 			}
+			std::cout << "Is this object jut rect? (y/n)" << '\n';
+			while (true)
+			{
+				std::string answer;
+				std::cin >> answer;
+				if (answer == "y")
+				{
+					object.isRect = true;
+					std::cout << "Enter Rect's width and height" << '\n';
+					std::cin >> object._widthHeight;
+					std::cout << "Enter Rect Color r,g,b,a" << '\n';
+					std::cin >> object._rectColor;
+
+					break;
+				}
+				else if (answer == "n")
+				{
+					object.isRect = false;
+					object._widthHeight = { 0,0 };
+					object._rectColor = { 0,0,0,255 };
+					break;
+				}
+			}
 			std::cout << "choose movetype : default | square" << '\n';
 			std::cin >> object._mType;
 			objects.push_back(object);
@@ -138,22 +198,32 @@ int main(void)
 			std::cin >> fileLoc;
 			fileLoc += ".obl";
 			std::ifstream in{ fileLoc,std::ios_base::binary };
-			size_t size;
-			in >> size;
-			objects.resize(size);
-			for (int i = 0; i < objects.size(); ++i)
+			if (in)
 			{
-				std::getline(in, objects[i]._type);
-				std::getline(in, objects[i]._objectName);
-				std::getline(in, objects[i]._fileName);
-				std::getline(in, objects[i]._text);
-				in >> objects[i]._originPos.x >> objects[i]._originPos.y;
-				in >> objects[i]._velocity.x >> objects[i]._velocity.y;
-				in >> objects[i].hasTarget;
-				in >> objects[i]._targetPos.x >> objects[i]._targetPos.y;
-				in.ignore();
-				std::getline(in, objects[i]._mType);
+				size_t size;
+				in >> size;
+				objects.resize(size);
+				for (int i = 0; i < objects.size(); ++i)
+				{
+					std::getline(in, objects[i]._type);
+					std::getline(in, objects[i]._objectName);
+					std::getline(in, objects[i]._fileName);
+					std::getline(in, objects[i]._text);
+					in >> objects[i]._originPos.x >> objects[i]._originPos.y;
+					in >> objects[i]._velocity.x >> objects[i]._velocity.y;
+					in >> objects[i].hasTarget;
+					in >> objects[i]._targetPos.x >> objects[i]._targetPos.y;
+					in >> objects[i].isRect;
+					in >> objects[i]._widthHeight;
+					in >> objects[i]._rectColor.r >> objects[i]._rectColor.g >> objects[i]._rectColor.b >> objects[i]._rectColor.a;
+					in.ignore();
+					std::getline(in, objects[i]._mType);
 
+				}
+			}
+			else
+			{
+				std::cout << "file not exists" << '\n';
 			}
 
 		}

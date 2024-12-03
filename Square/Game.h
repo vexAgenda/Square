@@ -24,6 +24,13 @@ enum class GameState
 	END
 };
 
+struct Color
+{
+	int r;
+	int g;
+	int b;
+	int a = 255;
+};
 
 struct ObjectBuffer
 {
@@ -35,7 +42,10 @@ struct ObjectBuffer
 	Vector2F _velocity;
 	bool hasTarget{ false };
 	Vector2F _targetPos{ 0,1 };
-	std::string _mType{};
+	bool isRect{ false };
+	Vector2 widthHeight;
+	Color rectColor;
+	MoveType _mType{};
 };
 
 class Game
@@ -114,6 +124,7 @@ private:
 		return object;
 	}
 
+	bool CreateObjectsFromFile(const std::string& fileName);
 	bool ReadMap(const std::string& mapName);
 private:
 	SDL_Window* window{};

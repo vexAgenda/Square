@@ -17,7 +17,7 @@ public:
 	auto& operator[](int i) { return _objects[i]; }
 	std::shared_ptr<GameObject> find(const std::string& textureName);
 	bool name_contains(std::shared_ptr<GameObject> obj,const std::string& name);
-	const std::vector<std::shared_ptr<GameObject>> objects() const
+	std::vector<std::shared_ptr<GameObject>>& objects()
 	{
 		return _objects;
 	}

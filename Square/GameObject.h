@@ -6,11 +6,16 @@
 #include <memory>
 #include <queue>
 #include <functional>
+#include <fstream>
 
 struct Vector2
 {
 	int x;
 	int y;
+	friend std::istream& operator>>(std::istream& is, Vector2 vec)
+	{
+		return is >> vec.x >> vec.y;
+	}
 };
 
 struct Vector2F
