@@ -4,6 +4,8 @@
 #include "TextButton.h"
 #include "SDL/SDL_ttf.h"
 
+#include <fstream>
+
 Game::Game() :
     objectManager{ new ObjectManager{}},
     eventHandler{ new EventHandler{} }
@@ -71,18 +73,31 @@ void Game::splash()
     static int splashTick{ 0 };
     static Uint32 splashcurTick{ 0 };
     //add splash logo object
-    std::shared_ptr<GameObject> splash{ nullptr };
     if (splashTick == 0)
     {
-        splash = CreateObject<GameObject>("splash", "Data/splash.png",
+        auto splash = CreateObject<GameObject>("splash", "Data/splash.png",
             new Vector2F[2]{ { scrX / 2.f,scrY / 2.f }, { 0,0 } }, MoveType::SQUARE);
+        auto square = CreateMoveTargetRect<GameObject>("square",
+            SDL_Rect{ 0,0,60,60 },
+            new Vector2F[3]{ {scrX / 2.f - 30,0} ,{0,0},
+            {scrX / 2.f - 30, scrY / 2.f} },
+            SDL_Color{ 0,0,0 },
+            MoveType::SQUARE);
         //set alpha to 240
         splash->InitFade(Fade::FADE_OUT, 60, 4);
     }
-    splash = objectManager->find("splash");
+    auto splash = objectManager->find("splash");
+    auto square = objectManager->find("square");
     if (splashTick > 60)
     {
         splash->SetVelocity({ 0,(splashTick - 60) * -1 / 4 });
+        splash->SetRotateAmount(5);
+        square->SetRotateAmount(20);
+        SDL_FRect squareHitbox = square->hitbox();
+        if (squareHitbox.y <= scrY / 2.f - 30)
+        {
+            square->SetVelocity({ 0,(splashTick - 60) / 4 });
+        }
     }
     if (splashTick > 150)
     {
@@ -259,22 +274,24 @@ void Game::render()
         switch (object->fadeType())
         {
         case Fade::FADE_IN:
-            renderFadeIn(object);
+            renderTextureFadeIn(object);
             break;
         case Fade::FADE_OUT:
-            renderFadeOut(object);
+            renderTextureFadeOut(object);
             break;
         }
-        if (SDL_RenderCopyF(renderer, object->texture(),
-            &rect, &posRect) != 0)
+        if (SDL_RenderCopyExF(renderer, object->texture(),
+            &rect, &posRect, object->angle(), NULL, SDL_FLIP_NONE)
+            != 0)
         {
-            SDL_Log("Render Failed: %s",SDL_GetError());
+            SDL_Log("Render Failed: %s", SDL_GetError());
         }
     }
     SDL_RenderPresent(renderer);
 
 }
-void Game::renderFadeOut(std::shared_ptr<GameObject> object)
+
+void Game::renderTextureFadeOut(std::shared_ptr<GameObject> object)
 {
     int currentFade = object->currentFade();
     const int fadeAmount = object->fadeAmount();
@@ -288,7 +305,7 @@ void Game::renderFadeOut(std::shared_ptr<GameObject> object)
         object->SetCurrentFade(currentFade - fadeAmount);
     }
 }
-void Game::renderFadeIn(std::shared_ptr<GameObject> object)
+void Game::renderTextureFadeIn(std::shared_ptr<GameObject> object)
 {
     int currentFade = object->currentFade();
     const int fadeAmount = object->fadeAmount();
@@ -341,6 +358,7 @@ void Game::titleEnter()
         ce->eid = EID::TITLE_STAGE_SELECT_CALLED;
         startButton->BindEvent(ce);
     }
+    auto square = objectManager->find("square");
     ++titleTick;
 }
 void Game::title()
@@ -402,7 +420,42 @@ void Game::title()
 }
 void Game::titleEnd()
 {
-    objectManager->Flush();
+    static int titleEndTick{ 0 } ;
+    for (auto object : objectManager->objects())
+    {
+        if (object == objectManager->find("square"))
+        {
+            object->SetVelocity({ 0, titleEndTick++ / 16});
+            object->SetRotateAmount(40);
+        }
+        else
+        {
+            object->SetVelocity({ 0, titleEndTick++ / 16 * -1 });
+        }
+        object->SetMoveType(MoveType::DEFAULT);
+        if (object->hitbox().y < 0 - object->imageRect().h 
+            || object->hitbox().y > scrY + object->imageRect().h)
+            objectManager->DeleteObject(object);
+
+    }
+    if (objectManager->objects().empty())
+    {
+        static int fadeTick{ 0 };
+        if (fadeTick > 255)
+        {
+            fadeTick = 255;
+            return;
+        }
+        SDL_SetRenderDrawColor(renderer, 255 - fadeTick,
+            255 - fadeTick , 255 - fadeTick, 255);
+        fadeTick+= 8;
+    }
+}
+bool Game::ReadMap(const std::string& mapName)
+{
+    std::fstream fs{ "s",std::ios_base::in | std::ios_base::binary };
+
+    return true;
 }
 void Game::update()
 {
@@ -416,6 +469,7 @@ void Game::update()
     {
         object->Move(deltaTime);
         object->MoveTargetted(deltaTime);
+        object->Rotate();
     }
 }
 

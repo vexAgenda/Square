@@ -4,4 +4,6 @@ C:\Users\pleas\source\repos\Square\Square\TextButton.h(5,8): warning C4099: 'Tex
       C:\Users\pleas\source\repos\Square\Square\TextButton.h(5,8):
       'Text' 선언을 참조하십시오.
   
+  main.cpp
+  코드를 생성하고 있습니다...
   Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe
