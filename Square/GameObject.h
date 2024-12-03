@@ -39,21 +39,26 @@ public:
 	GameObject(const std::string& name);
 	virtual ~GameObject();
 
+	bool MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect,const SDL_Color& rectColor);
 	virtual bool LoadImage(SDL_Renderer* renderer, const std::string& str);
 
 	Fade fadeType() { return _fadeType; }
 	void SetFadeType(Fade type) { _fadeType = type; }
-	int currentFade() { return _currentFade; }
+	const int currentFade() { return _currentFade; }
 	void SetCurrentFade(int amount) { _currentFade = amount; }
 	void SetFadeAmount(int amount) { _fadeAmount = amount; }
-	int fadeAmount() { return _fadeAmount; }
+	const int fadeAmount() { return _fadeAmount; }
 	void InitFade(Fade fadeType, int currentFade, int amount);
+	bool SetVisible(bool visible) { _visible = visible; }
 
 	std::string objectName() { return _objectName; }
+	SDL_Color rectColor(){ return _rectColor; }
 	SDL_Texture* texture() { return _texture; }
-	SDL_Rect imageRect() { return _imageRect; }
-	SDL_FRect posRect() { return _posRect; }
-	SDL_FRect hitbox() { return _hitbox; }
+	const SDL_Rect imageRect() const { return _imageRect; }
+	const SDL_FRect posRect() const { return _posRect; }
+	const SDL_FRect hitbox() const { return _hitbox; }
+	const bool visible() { return _visible; }
+	const double angle() { return _angle; }
 	void SetHitbox(const SDL_FRect& rect)
 	{
 		_hitbox = rect;
@@ -70,6 +75,10 @@ public:
 	void PushTarget(const Vector2F& pos);
 	bool is_hover(const Vector2& mouse);
 
+	// rotate related function
+	void Rotate();
+	void SetRotateAmount(int degree) { _rotate_amount = degree; }
+
 private:
 	//move related function
 	void MoveDefault(float deltaTime);
@@ -78,20 +87,27 @@ protected:
 	std::string _objectName{};
 	std::string _fileName{};
 
+	SDL_Color _rectColor{0,0,0};
+
 	SDL_Texture* _texture{ nullptr };
 	SDL_Rect _imageRect{};
 	SDL_FRect _posRect{};
 	SDL_FRect _hitbox{};
+	double _angle{0.f};
 	//texture fade
 	int _fadeAmount{ 0 };
 	int _currentFade{ 0 };
 	Fade _fadeType{ Fade::NONE };
+	bool _visible{ true };
 
 	//move related
 	bool _isTargetted{ false };
 	std::queue<Vector2F> _targetCoords;
 	std::queue<Vector2> _velocity;
 	MoveType _moveType{ MoveType::END };
+
+	//rotate related
+	int _rotate_amount{ 0 };
 
 
 };
