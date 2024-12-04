@@ -8,7 +8,7 @@
 #include "ObjectManager.h"
 #include "EventHandler.h"
 
-class Text;
+#include "TextButton.h"
 
 enum class GameState
 {
@@ -37,7 +37,7 @@ struct ObjectBuffer
 	std::string _type;
 	std::string _objectName;
 	std::string _fileName;
-	std::string _text;
+	Text _text;
 	Vector2F _originPos;
 	Vector2F _velocity;
 	bool hasTarget{ false };

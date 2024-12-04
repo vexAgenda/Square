@@ -16,6 +16,7 @@ enum MoveType
 	MT_SQUARE,
 	MT_END
 };
+
 struct Vector2
 {
 	int x;
@@ -61,13 +62,28 @@ struct Color
 		return is >> color.r >> color.g >> color.b >> color.a;
 	}
 };
+struct Text
+{
+	int _ptSize;
+	Color _fontColor;
+	std::string _msg;
+	friend std::ostream& operator<<(std::ostream& os, Text& text)
+	{
+		os << text._ptSize << " " << text._fontColor << " " << text._msg << '\n'; 
+	}
+	friend std::istream& operator>>(std::istream& is, Text& text)
+	{
+		is >> text._ptSize >> text._fontColor >> text._msg;
+ 	}
+};
 
 struct ObjectBuffer
 {
 	std::string _type{};
 	std::string _objectName{"test"};
 	std::string _fileName{"Data/null.png"};
-	std::string _text{ "test" };
+	bool hasText{};
+	Text _text{ 1,{0,0,0,255},"Text"};
 	Vector2F _originPos{0,1} ;
 	Vector2F _velocity{ 0,0 };
 	bool hasTarget{ false };
@@ -79,12 +95,59 @@ struct ObjectBuffer
 	friend std::ostream& operator<<(std::ostream& os, ObjectBuffer& buffer)
 	{
 		return  os << buffer._type << '\n' << buffer._objectName << '\n'
-			<< buffer._fileName << '\n' << buffer._text << '\n' <<
+			<< buffer._fileName << '\n' << buffer.hasText << '\n' << buffer._text <<
 			buffer._originPos << buffer._velocity << buffer.hasTarget << '\n'
 			<< buffer._targetPos << buffer.isRect << '\n' << buffer._widthHeight << buffer._rectColor 
 			<< buffer._mType << '\n';
 	}
 };
+void CreateTarget(ObjectBuffer& object)
+{
+	while (true)
+	{
+		std::string answer;
+		std::cin >> answer;
+		if (answer == "y")
+		{
+			object.isRect = true;
+			std::cout << "Enter Target's position" << '\n';
+			std::cin >> object._targetPos;
+
+			break;
+		}
+		else if (answer == "n")
+		{
+			object.hasTarget = false;
+			object._targetPos = { 0,0 };
+			break;
+		}
+	}
+}
+void CreateRect(ObjectBuffer& object)
+{
+	while (true)
+	{
+		std::string answer;
+		std::cin >> answer;
+		if (answer == "y")
+		{
+			object.isRect = true;
+			std::cout << "Enter Rect's width and height" << '\n';
+			std::cin >> object._widthHeight;
+			std::cout << "Enter Rect Color r g b a" << '\n';
+			std::cin >> object._rectColor;
+
+			break;
+		}
+		else if (answer == "n")
+		{
+			object.isRect = false;
+			object._widthHeight = { 0,0 };
+			object._rectColor = { 0,0,0,255 };
+			break;
+		}
+	}
+}
 
 int main(void)
 {
@@ -123,55 +186,22 @@ int main(void)
 			object._fileName = "Data/" + fileName + ".png";
 			if (object._type.contains("Text"))
 			{
-				std::cout << "Enter Text label" << '\n';
-				std::cin >> object._text;
+				object._fileName = "Data/Fonts/" + fileName + ".ttf";
+				std::cout << "Enter Text ptSize" << '\n';
+				std::cin >> object._text._ptSize;
+				std::cout << "Enter Text Color r g b a" << '\n';
+				std::cin >> object._text._fontColor;
+				std::cout << "Enter Text message" << '\n';
+				std::cin >> object._text._msg;
 			}
 			std::cout << "Enter Origin position" << '\n';
 			std::cin >> object._originPos;
 			std::cout << "Enter Origin Velocity" << '\n';
 			std::cin >> object._velocity;
 			std::cout << "Does this object have target? (y/n)" << '\n';
-			while (true)
-			{
-				std::string answer;
-				std::cin >> answer;
-				if (answer == "y")
-				{
-					object.hasTarget = true;
-					std::cout << "Enter Target Position" << '\n';
-					std::cin >> object._targetPos;
-					break;
-				}
-				else if (answer == "n")
-				{
-					object.hasTarget = false;
-					object._targetPos = { 0,0 };
-					break;
-				}
-			}
-			std::cout << "Is this object jut rect? (y/n)" << '\n';
-			while (true)
-			{
-				std::string answer;
-				std::cin >> answer;
-				if (answer == "y")
-				{
-					object.isRect = true;
-					std::cout << "Enter Rect's width and height" << '\n';
-					std::cin >> object._widthHeight;
-					std::cout << "Enter Rect Color r,g,b,a" << '\n';
-					std::cin >> object._rectColor;
-
-					break;
-				}
-				else if (answer == "n")
-				{
-					object.isRect = false;
-					object._widthHeight = { 0,0 };
-					object._rectColor = { 0,0,0,255 };
-					break;
-				}
-			}
+			CreateTarget(object); 
+			std::cout << "Is this object just rect? (y/n)" << '\n';
+			CreateRect(object);
 			std::cout << "choose movetype : default | square" << '\n';
 			std::cin >> object._mType;
 			objects.push_back(object);
@@ -208,7 +238,9 @@ int main(void)
 					std::getline(in, objects[i]._type);
 					std::getline(in, objects[i]._objectName);
 					std::getline(in, objects[i]._fileName);
-					std::getline(in, objects[i]._text);
+					in >> objects[i]._text._ptSize;
+					in >> objects[i]._text._fontColor.r >> objects[i]._text._fontColor.g >> objects[i]._text._fontColor.b >> objects[i]._text._fontColor.a;
+					std::getline(in, objects[i]._text._msg);
 					in >> objects[i]._originPos.x >> objects[i]._originPos.y;
 					in >> objects[i]._velocity.x >> objects[i]._velocity.y;
 					in >> objects[i].hasTarget;
