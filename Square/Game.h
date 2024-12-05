@@ -124,8 +124,6 @@ private:
 		return object;
 	}
 
-	bool CreateObjectsFromFile(const std::string& fileName);
-	bool ReadMap(const std::string& mapName);
 private:
 	SDL_Window* window{};
 	SDL_Renderer* renderer{};

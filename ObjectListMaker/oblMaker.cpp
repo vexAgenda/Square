@@ -69,37 +69,29 @@ struct Text
 	std::string _msg;
 	friend std::ostream& operator<<(std::ostream& os, Text& text)
 	{
-		os << text._ptSize << " " << text._fontColor << " " << text._msg << '\n'; 
+		return os << text._ptSize << " " << text._fontColor << " " << text._msg << '\n'; 
 	}
 	friend std::istream& operator>>(std::istream& is, Text& text)
 	{
-		is >> text._ptSize >> text._fontColor >> text._msg;
+		return is >> text._ptSize >> text._fontColor >> text._msg;
  	}
 };
 
 struct ObjectBuffer
 {
 	std::string _type{};
-	std::string _objectName{"test"};
-	std::string _fileName{"Data/null.png"};
+	std::string _objectName{};
+	std::string _fileName{};
 	bool hasText{};
-	Text _text{ 1,{0,0,0,255},"Text"};
-	Vector2F _originPos{0,1} ;
-	Vector2F _velocity{ 0,0 };
+	Text _text{};
+	Vector2F _originPos{} ;
+	Vector2F _velocity{};
 	bool hasTarget{ false };
-	Vector2F _targetPos{ 0,1 };
+	Vector2F _targetPos{};
 	bool isRect{ false };
 	Vector2 _widthHeight{};
 	Color _rectColor{};
 	std::string _mType{};
-	friend std::ostream& operator<<(std::ostream& os, ObjectBuffer& buffer)
-	{
-		return  os << buffer._type << '\n' << buffer._objectName << '\n'
-			<< buffer._fileName << '\n' << buffer.hasText << '\n' << buffer._text <<
-			buffer._originPos << buffer._velocity << buffer.hasTarget << '\n'
-			<< buffer._targetPos << buffer.isRect << '\n' << buffer._widthHeight << buffer._rectColor 
-			<< buffer._mType << '\n';
-	}
 };
 void CreateTarget(ObjectBuffer& object)
 {
@@ -109,7 +101,7 @@ void CreateTarget(ObjectBuffer& object)
 		std::cin >> answer;
 		if (answer == "y")
 		{
-			object.isRect = true;
+			object.hasTarget = true;
 			std::cout << "Enter Target's position" << '\n';
 			std::cin >> object._targetPos;
 
@@ -149,6 +141,9 @@ void CreateRect(ObjectBuffer& object)
 	}
 }
 
+void WriteToFile(std::ofstream& out,ObjectBuffer& buffer);
+ObjectBuffer ReadFile(std::ifstream& in);
+bool ReadBoolean(std::ifstream& in);
 int main(void)
 {
 	std::vector<ObjectBuffer> objects;
@@ -161,14 +156,25 @@ int main(void)
 
 		for (int i = 0; i < objects.size(); ++i)
 		{
-			std::cout << "[" << i << "]. " << objects[i]._type << " " << objects[i]._objectName << " " << objects[i]._fileName << " "
-				<< objects[i]._text << " {" << objects[i]._originPos.x << ", " << objects[i]._originPos.y << "}"
-				<< " {" << objects[i]._velocity.x << ", " << objects[i]._velocity.y << "}"
-				<< " " << objects[i].hasTarget
-				<< " {" << objects[i]._targetPos.x << ", " << objects[i]._targetPos.y << "}"
-				<< objects[i].isRect << " {" << objects[i]._widthHeight.x << ", " << objects[i]._widthHeight.y << "}"
-				<< " {"<< objects[i]._rectColor.r << ", " << objects[i]._rectColor.g << ", " << objects[i]._rectColor.b << ", " << objects[i]._rectColor.a << "}"
-				<< " " << objects[i]._mType << '\n';
+			std::print(std::cout,"{}. {} | {} | File Location: {}\n", i, objects[i]._objectName, objects[i]._type,objects[i]._fileName);
+			if (objects[i]._type.contains("Text"))
+			{
+				std::print(std::cout, "Point Size: {}px, Font Color [R: {}, G: {}, B: {}, A: {}], Message: \"{}\"\n", objects[i]._text._ptSize,
+					objects[i]._text._fontColor.r, objects[i]._text._fontColor.g, objects[i]._text._fontColor.b, objects[i]._text._fontColor.a, objects[i]._text._msg);
+			}
+			std::print(std::cout, "Origin Pos: [{}, {}] Velocity : [{}, {}]\n", objects[i]._originPos.x, objects[i]._originPos.y,
+				objects[i]._velocity.x, objects[i]._velocity.y);
+			std::print(std::cout, "has Target: {}\n", objects[i].hasTarget);
+			if (objects[i].hasTarget)
+				std::print(std::cout, "Target Pos: [{}, {}]\n", objects[i]._targetPos.x, objects[i]._targetPos.y);
+			std::print(std::cout, "is Rect: {}\n", objects[i].isRect);
+			if (objects[i].isRect)
+			{
+				std::print(std::cout,"Width: {} Height: {}, Rect Color[R: {}, G: {}, B: {}, A: {}]\n",objects[i]._widthHeight.x,objects[i]._widthHeight.y,
+					objects[i]._rectColor.r, objects[i]._rectColor.g, objects[i]._rectColor.b,objects[i]._rectColor.a);
+			}
+			std::print(std::cout, "Move Type: {}\n",objects[i]._mType);
+
 		}
 		std::cout << "======================" << '\n';
 		std::cout << "> ";
@@ -217,7 +223,7 @@ int main(void)
 			out << objects.size();
 			for (auto& object : objects)
 			{
-				out << object;
+				WriteToFile(out,object);
 			}
 		}
 		else if (command == "Load")
@@ -235,22 +241,7 @@ int main(void)
 				objects.resize(size);
 				for (int i = 0; i < objects.size(); ++i)
 				{
-					std::getline(in, objects[i]._type);
-					std::getline(in, objects[i]._objectName);
-					std::getline(in, objects[i]._fileName);
-					in >> objects[i]._text._ptSize;
-					in >> objects[i]._text._fontColor.r >> objects[i]._text._fontColor.g >> objects[i]._text._fontColor.b >> objects[i]._text._fontColor.a;
-					std::getline(in, objects[i]._text._msg);
-					in >> objects[i]._originPos.x >> objects[i]._originPos.y;
-					in >> objects[i]._velocity.x >> objects[i]._velocity.y;
-					in >> objects[i].hasTarget;
-					in >> objects[i]._targetPos.x >> objects[i]._targetPos.y;
-					in >> objects[i].isRect;
-					in >> objects[i]._widthHeight;
-					in >> objects[i]._rectColor.r >> objects[i]._rectColor.g >> objects[i]._rectColor.b >> objects[i]._rectColor.a;
-					in.ignore();
-					std::getline(in, objects[i]._mType);
-
+					objects[i] = ReadFile(in);
 				}
 			}
 			else
