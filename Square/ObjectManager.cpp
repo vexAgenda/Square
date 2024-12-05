@@ -7,27 +7,28 @@ ObjectManager::ObjectManager() : _objects{}
 
 ObjectManager::~ObjectManager()
 {
+	Flush();
 }
 
 void ObjectManager::AddObject(std::shared_ptr<GameObject> object)
 {
+	if (!object) return;
 	_objects.push_back(object);
 }
 
 void ObjectManager::DeleteObject(std::shared_ptr<GameObject> object)
 {
-	_objects.erase(std::remove(_objects.begin(),_objects.end()
-	,object),_objects.end());
+	auto it = std::find(_objects.begin(), _objects.end(), object);
+	if (it != _objects.end())
+	{
+		_objects.erase(it);
+	}
+
 }
 
 void ObjectManager::Flush()
 {
-	if (_objects.empty())
-		return;
-	for (auto object : _objects)
-	{
-		DeleteObject(object);
-	}
+	_objects.clear();
 }
 
 std::shared_ptr<GameObject> ObjectManager::find(const std::string& objectName)

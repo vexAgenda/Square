@@ -221,6 +221,8 @@ void Game::input()
             {
                 for (auto object : objectManager->objects())
                 {
+                    if (!object)
+                        SDL_Log("empty!");
                     if (auto button = std::dynamic_pointer_cast<Button>(object))
                     {
                         if (button->is_hover(_mouse))
@@ -426,7 +428,7 @@ void Game::titleEnd()
     {
         if (object == objectManager->find("square"))
         {
-            object->SetVelocity({ 0, titleEndTick++ / 16});
+            object->SetVelocity({ 0, titleEndTick++ / 16 });
             object->SetRotateAmount(40);
         }
         else
@@ -434,9 +436,12 @@ void Game::titleEnd()
             object->SetVelocity({ 0, titleEndTick++ / 16 * -1 });
         }
         object->SetMoveType(MoveType::DEFAULT);
-        if (object->hitbox().y < 0 - object->imageRect().h 
+        if (object->hitbox().y < 0 - object->imageRect().h
             || object->hitbox().y > scrY + object->imageRect().h)
-            objectManager->DeleteObject(object);
+        {
+                objectManager->DeleteObject(object);
+                //break;
+        }
 
     }
     if (objectManager->objects().empty())
