@@ -142,8 +142,15 @@ void CreateRect(ObjectBuffer& object)
 }
 
 void WriteToFile(std::ofstream& out,ObjectBuffer& buffer);
+void WriteString(std::ofstream& out, std::string& string);
+void WriteColor(std::ofstream& out, Color& color);
+void WriteVector2(std::ofstream& out, Vector2& vector2);
+void WriteVector2F(std::ofstream& out, Vector2F& vector2f);
 ObjectBuffer ReadFile(std::ifstream& in);
-bool ReadBoolean(std::ifstream& in);
+void ReadString(std::ifstream& in, std::string& string);
+void ReadColor(std::ifstream& in, Color& color);
+void ReadVector2(std::ifstream& in, Vector2& vector2);
+void ReadVector2F(std::ifstream& in, Vector2F& vector2f);
 int main(void)
 {
 	std::vector<ObjectBuffer> objects;
@@ -220,7 +227,8 @@ int main(void)
 			std::cin >> saveLoc;
 			saveLoc += ".obl";
 			std::ofstream out{ saveLoc,std::ios_base::binary };
-			out << objects.size();
+			size_t size = objects.size();
+			out.write(reinterpret_cast<char*>(&size), sizeof(size));
 			for (auto& object : objects)
 			{
 				WriteToFile(out,object);
@@ -237,7 +245,7 @@ int main(void)
 			if (in)
 			{
 				size_t size;
-				in >> size;
+				in.read(reinterpret_cast<char*>(&size), sizeof(size));
 				objects.resize(size);
 				for (int i = 0; i < objects.size(); ++i)
 				{
@@ -253,4 +261,113 @@ int main(void)
 		system("timeout -1");
 		system("cls");
 	}
+}
+
+void WriteToFile(std::ofstream& out,ObjectBuffer& buffer)
+{
+	WriteString(out, buffer._type);
+	WriteString(out, buffer._objectName);
+	WriteString(out, buffer._fileName);
+	if (buffer._type.contains("Text"))
+	{
+		out.write(reinterpret_cast<char*>(&buffer._text._ptSize), sizeof(int));
+		WriteColor(out, buffer._text._fontColor);
+		WriteString(out, buffer._text._msg);
+	}
+	WriteVector2F(out, buffer._originPos);
+	WriteVector2F(out, buffer._velocity);
+	out.write(reinterpret_cast<char*>(&buffer.hasTarget), sizeof(bool));
+	if (buffer.hasTarget)
+		WriteVector2F(out, buffer._targetPos);
+	out.write(reinterpret_cast<char*>(&buffer.isRect), sizeof(bool));
+	if (buffer.isRect)
+	{
+		WriteVector2(out, buffer._widthHeight);
+		WriteColor(out, buffer._rectColor);
+	}
+	WriteString(out, buffer._mType);
+}
+
+void WriteString(std::ofstream& out, std::string& string)
+{
+
+	size_t size = string.size();
+	out.write(reinterpret_cast<char*>(&size), sizeof(size));
+	out.write(string.c_str(), size);
+}
+
+void WriteColor(std::ofstream& out, Color& color)
+{
+	out.write(reinterpret_cast<char*>(&color.r), sizeof(int));
+	out.write(reinterpret_cast<char*>(&color.g), sizeof(int));
+	out.write(reinterpret_cast<char*>(&color.b), sizeof(int));
+	out.write(reinterpret_cast<char*>(&color.a), sizeof(int));
+}
+
+void WriteVector2(std::ofstream& out, Vector2& vector2)
+{
+	out.write(reinterpret_cast<char*>(&vector2.x), sizeof(int));
+	out.write(reinterpret_cast<char*>(&vector2.y), sizeof(int));
+}
+
+void WriteVector2F(std::ofstream& out, Vector2F& vector2f)
+{
+	out.write(reinterpret_cast<char*>(&vector2f.x), sizeof(float));
+	out.write(reinterpret_cast<char*>(&vector2f.y), sizeof(float));
+
+}
+
+ObjectBuffer ReadFile(std::ifstream& in)
+{
+	ObjectBuffer buffer;
+	ReadString(in, buffer._type);
+	ReadString(in, buffer._objectName);
+	ReadString(in, buffer._fileName);
+	if (buffer._type.contains("Text"))
+	{
+		in.read(reinterpret_cast<char*>(&buffer._text._ptSize), sizeof(int));
+		ReadColor(in, buffer._text._fontColor);
+		ReadString(in, buffer._text._msg);
+	}
+	ReadVector2F(in, buffer._originPos);
+	ReadVector2F(in, buffer._velocity);
+	in.read(reinterpret_cast<char*>(&buffer.hasTarget), sizeof(bool));
+	if (buffer.hasTarget)
+		ReadVector2F(in, buffer._targetPos);
+	in.read(reinterpret_cast<char*>(&buffer.isRect), sizeof(bool));
+	if (buffer.isRect)
+	{
+		ReadVector2(in, buffer._widthHeight);
+		ReadColor(in, buffer._rectColor);
+	}
+	ReadString(in, buffer._mType);
+	return buffer;
+}
+
+void ReadString(std::ifstream& in, std::string& string)
+{
+	size_t size;
+	in.read(reinterpret_cast<char*>(&size), sizeof(size));
+	string.resize(size);
+	in.read(const_cast<char*>(string.c_str()), size);
+}
+
+void ReadColor(std::ifstream& in, Color& color)
+{
+	in.read(reinterpret_cast<char*>(&color.r), sizeof(int));
+	in.read(reinterpret_cast<char*>(&color.g), sizeof(int));
+	in.read(reinterpret_cast<char*>(&color.b), sizeof(int));
+	in.read(reinterpret_cast<char*>(&color.a), sizeof(int));
+}
+void ReadVector2(std::ifstream& in, Vector2& vector2)
+{
+	in.read(reinterpret_cast<char*>(&vector2.x), sizeof(int));
+	in.read(reinterpret_cast<char*>(&vector2.y), sizeof(int));
+}
+
+void ReadVector2F(std::ifstream& in, Vector2F& vector2f)
+{
+	in.read(reinterpret_cast<char*>(&vector2f.x), sizeof(float));
+	in.read(reinterpret_cast<char*>(&vector2f.y), sizeof(float));
+
 }

@@ -8,7 +8,8 @@
 
 Game::Game() :
     objectManager{ new ObjectManager{}},
-    eventHandler{ new EventHandler{} }
+    eventHandler{ new EventHandler{} },
+    objectFactory{ new ObjectFactory{}}
 {
 }
 
@@ -72,12 +73,15 @@ void Game::splash()
 {
     static int splashTick{ 0 };
     static Uint32 splashcurTick{ 0 };
+    auto splash = objectManager->find("splash");
+    auto square = objectManager->find("square");
     //add splash logo object
     if (splashTick == 0)
     {
-        auto splash = CreateObject<GameObject>("splash", "Data/splash.png",
-            new Vector2F[2]{ { scrX / 2.f,scrY / 2.f }, { 0,0 } }, MoveType::SQUARE);
-        auto square = CreateMoveTargetRect<GameObject>("square",
+        auto buffer = objectFactory->CreateObjectCreateBuffer("splash", "Data/splash.png",
+            { scrX / 2.f,scrY / 2.f }, { 0,0 }, {}, MoveType::SQUARE);
+        auto splash = objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
+        auto square = objectFactory->CreateMoveTargetRect<GameObject>(objectManager,renderer,"square",
             SDL_Rect{ 0,0,60,60 },
             new Vector2F[3]{ {scrX / 2.f - 30,0} ,{0,0},
             {scrX / 2.f - 30, scrY / 2.f} },
@@ -86,8 +90,6 @@ void Game::splash()
         //set alpha to 240
         splash->InitFade(Fade::FADE_OUT, 60, 4);
     }
-    auto splash = objectManager->find("splash");
-    auto square = objectManager->find("square");
     if (splashTick > 60)
     {
         splash->SetVelocity({ 0,(splashTick - 60) * -1 / 4 });
@@ -150,15 +152,15 @@ void Game::event()
         {
             if (!stageSelectCalled)
             {
-                auto stageSelect = CreateObject<GameObject>("stageSelect"
-                    , "Data/stagebackground.png",
-                    new Vector2F[2]{ {scrX / 2.f - 150,scrY / 2.f - 150},
-                    {0,0} }, MoveType::DEFAULT);
+                auto buffer = objectFactory->CreateObjectCreateBuffer("stageSelect"
+                    , "Data/stagebackground.png", { scrX / 2.f - 150,scrY / 2.f - 150 },{ 0,0 }, {}, MoveType::DEFAULT);
+                auto stageSelect = objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
 
                 for (int i = 0; i < stageCleared.size(); ++i)
                 {
-                    auto stageButton = CreateTextObject<TextButton>
+                    auto stageButton = objectFactory->CreateTextObject<TextButton>
                         (
+                            objectManager,renderer,
                             "stageButton" + std::to_string(1 + i),
                             "Data/Fonts/font.ttf",
                             { 36,{255,255,255},std::to_string(1 + i) },
@@ -330,17 +332,19 @@ void Game::titleEnter()
     if (!init)
     {
         SDL_Log("Title");
-        CreateMoveTargetObject<GameObject>("titleLogo",
-            "Data/title.png", new Vector2F[3]{ {10,896},
-            {0,-10},{10,0} }, MoveType::SQUARE);
-        CreateObject<GameObject>("titleStartButtonOverlay", "Data/null.png",
-            new Vector2F[2]{ {374,250},{0,0} }, MoveType::SQUARE);
-        CreateMoveTargetObject<Button>(
-            "titleStartButton", "Data/startbutton.png",
-            new Vector2F[3]{ { 374,796 }, { 0,-1 },{ 374,250 } },
-            MoveType::SQUARE);
-        CreateObject<Button>("optionButton", "Data/option.png",
-            new Vector2F[2]{ {10,scrY - 64 - 10.f},{0,0} }, MoveType::SQUARE);
+        auto buffer = objectFactory->CreateObjectCreateBuffer("titleLogo",
+            "Data/title.png", { 10,896 }, { 0,-10 }, { 10,0 }, MoveType::SQUARE);
+        objectFactory->CreateMoveTargetObject<GameObject>(objectManager,renderer,buffer);
+        buffer = objectFactory->CreateObjectCreateBuffer
+        ("titleStartButtonOverlay", "Data/null.png",{ 374,250 }, { 0,0 }, {}, MoveType::SQUARE);
+        objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
+        buffer = objectFactory->CreateObjectCreateBuffer("titleStartButton", "Data/startbutton.png",
+            { 374,796 }, { 0,-1 }, { 374,250 },MoveType::SQUARE);
+        objectFactory->CreateMoveTargetObject<Button>(
+            objectManager,renderer,buffer);
+        buffer = objectFactory->CreateObjectCreateBuffer("optionButton", "Data/option.png",
+            {10,scrY - 64 - 10.f},{0,0} , {}, MoveType::SQUARE);
+        objectFactory->CreateObject<Button>(objectManager,renderer,buffer);
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");
