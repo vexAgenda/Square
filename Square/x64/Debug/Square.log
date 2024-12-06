@@ -1,13 +1,11 @@
 ﻿  Button.cpp
   EventHandler.cpp
   Game.cpp
-  GameObject.cpp
-D:\repos\Square\Square\GameObject.cpp(32,19): warning C4244: '=': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(33,19): warning C4244: '=': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(58,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(59,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(83,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\repos\Square\Square\GameObject.cpp(84,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  ObjectFactory.cpp
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(54,50): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(54,70): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(54,91): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(54,112): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
   main.cpp
   ObjectManager.cpp
   TextButton.cpp

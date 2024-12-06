@@ -2,12 +2,6 @@
 
 #include "Button.h"
 #include "SDL/SDL_ttf.h"
-struct Text
-{
-	int _ptSize{ 0 };
-	SDL_Color _fontColor{};
-	std::string _msg{};
-};
 class TextButton :public Button
 {
 public:

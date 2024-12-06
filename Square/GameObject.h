@@ -1,46 +1,12 @@
 #pragma once
-#include <SDL/SDL.h>
 
 #include <SDL/SDL_image.h>
 #include <string>
 #include <memory>
 #include <queue>
-#include <functional>
-#include <fstream>
 
-struct Vector2
-{
-	int x;
-	int y;
-	friend std::istream& operator>>(std::istream& is, Vector2 vec)
-	{
-		return is >> vec.x >> vec.y;
-	}
-};
+#include "ObjectEssentials.h"
 
-struct Vector2F
-{
-	float x;
-	float y;
-	friend std::istream& operator>>(std::istream& is, Vector2F& vec)
-	{
-		return is >> vec.x >> vec.y;
-	}
-};
-
-enum class MoveType
-{
-	DEFAULT,
-	SQUARE,
-	END
-};
-
-enum class Fade
-{
-	NONE,
-	FADE_IN,
-	FADE_OUT
-};
 class GameObject
 {
 public:
