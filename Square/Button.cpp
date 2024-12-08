@@ -12,16 +12,13 @@ Button::Button(const std::string& str)
 
 Button::~Button()
 {
-	delete _bind;
+	if (!_bind)
+		SDL_Log("_bind removed!");
 }
 
-void Button::BindEvent(Event* e)
+void Button::BindEvent(Event& e)
 {
-	if (!e)
-		return;
-	if (_bind)
-		delete _bind;
-	_bind = e;
+	_bind = std::move(std::make_unique<Event>(e));
 }
 
 void Button::ClickEvent(std::unique_ptr<class EventHandler>& eventHandler)

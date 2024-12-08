@@ -36,6 +36,10 @@ public:
 	void quit();
 private:
 	void event();
+	//Event related Function
+	void PropagateEvent(EID e);
+	void MenuSelect();
+
 	void state();
 	void input();
 	void update();

@@ -158,7 +158,7 @@ int main(void)
 	{
 		std::string command;
 		std::cout << "Object List Maker" << '\n';
-		std::cout << "Add Save Load" <<'\n';
+		std::cout << "Add Delete Edit Save Load" <<'\n';
 		std::cout << "======================" << '\n';
 
 		for (int i = 0; i < objects.size(); ++i)
@@ -219,6 +219,57 @@ int main(void)
 			std::cin >> object._mType;
 			objects.push_back(object);
 			
+		}
+		else if (command == "Delete")
+		{
+			int where;
+			std::cout << "Delete which? (0 ~ " << objects.size() - 1 << ")\n";
+			std::cin >> where;
+			if (where > objects.size() - 1 || where < 0)
+				std::cout << "invalid size\n";
+			else
+			{
+				objects.erase(objects.begin() + where);
+			}
+		}
+		else if (command == "Edit")
+		{
+			int where;
+			std::cout << "Edit which? (0 ~ " << objects.size() - 1 << ")\n";
+			std::cin >> where;
+			if (where > objects.size() - 1|| where < 0)
+				std::cout << "invalid index\n";
+			else
+			{
+				std::cout << "Enter ObjectType" << '\n';
+				std::cin >> objects[where]._type;
+				std::cout << "Enter Object name" << '\n';
+				std::cin >> objects[where]._objectName;
+				std::string fileName;
+				std::cout << "Enter FileName (only name, no location)" << '\n';
+				std::cin >> fileName;
+				objects[where]._fileName = "Data/" + fileName + ".png";
+				if (objects[where]._type.contains("Text"))
+				{
+					objects[where]._fileName = "Data/Fonts/" + fileName + ".ttf";
+					std::cout << "Enter Text ptSize" << '\n';
+					std::cin >> objects[where]._text._ptSize;
+					std::cout << "Enter Text Color r g b a" << '\n';
+					std::cin >> objects[where]._text._fontColor;
+					std::cout << "Enter Text message" << '\n';
+					std::cin >> objects[where]._text._msg;
+				}
+				std::cout << "Enter Origin position" << '\n';
+				std::cin >> objects[where]._originPos;
+				std::cout << "Enter Origin Velocity" << '\n';
+				std::cin >> objects[where]._velocity;
+				std::cout << "Does this object have target? (y/n)" << '\n';
+				CreateTarget(objects[where]);
+				std::cout << "Is this object just rect? (y/n)" << '\n';
+				CreateRect(objects[where]);
+				std::cout << "choose movetype : default | square" << '\n';
+				std::cin >> objects[where]._mType;
+			}
 		}
 		else if (command == "Save")
 		{

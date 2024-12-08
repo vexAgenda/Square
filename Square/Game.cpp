@@ -62,6 +62,7 @@ bool Game::init()
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
+    objectFactory->CreateObjectsFromFile(objectManager, renderer, "Objects/splash.obl");
     // push splash event
     Event e;
     e.eid = EID::SPLASH;
@@ -78,16 +79,6 @@ void Game::splash()
     //add splash logo object
     if (splashTick == 0)
     {
-        auto buffer = objectFactory->CreateObjectCreateBuffer("splash", "Data/splash.png",
-            { scrX / 2.f,scrY / 2.f }, { 0,0 }, {}, MoveType::SQUARE);
-        auto splash = objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
-        auto square = objectFactory->CreateMoveTargetRect<GameObject>(objectManager,renderer,"square",
-            SDL_Rect{ 0,0,60,60 },
-            new Vector2F[3]{ {scrX / 2.f - 30,0} ,{0,0},
-            {scrX / 2.f - 30, scrY / 2.f} },
-            SDL_Color{ 0,0,0 },
-            MoveType::SQUARE);
-        //set alpha to 240
         splash->InitFade(Fade::FADE_OUT, 60, 4);
     }
     if (splashTick > 60)
@@ -97,9 +88,9 @@ void Game::splash()
         square->SetRotateAmount(20);
         SDL_FRect squareHitbox = square->hitbox();
         if (squareHitbox.y <= scrY / 2.f - 30)
-        {
             square->SetVelocity({ 0,(splashTick - 60) / 4 });
-        }
+        else
+            square->SetVelocity({ 0,0 });
     }
     if (splashTick > 150)
     {
@@ -152,27 +143,7 @@ void Game::event()
         {
             if (!stageSelectCalled)
             {
-                auto buffer = objectFactory->CreateObjectCreateBuffer("stageSelect"
-                    , "Data/stagebackground.png", { scrX / 2.f - 150,scrY / 2.f - 150 },{ 0,0 }, {}, MoveType::DEFAULT);
-                auto stageSelect = objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
-
-                for (int i = 0; i < stageCleared.size(); ++i)
-                {
-                    auto stageButton = objectFactory->CreateTextObject<TextButton>
-                        (
-                            objectManager,renderer,
-                            "stageButton" + std::to_string(1 + i),
-                            "Data/Fonts/font.ttf",
-                            { 36,{255,255,255},std::to_string(1 + i) },
-                            new Vector2F[2]{ {scrX / 2.f - 150 + 50 * (i % 6) ,scrY / 2.f - 150 + 5 + 50 * (i / 6)},{0,0}},
-                            MoveType::DEFAULT
-                        );
-                    Event* e = new Event;
-                    e->eid = EID::TITLE_END;
-                    stageButton->BindEvent(e);
-                }
-                stageSelect->InitFade(Fade::FADE_OUT, 60, 6);
-                stageSelectCalled = true;
+                MenuSelect();
             }
             break;
         }
@@ -183,7 +154,31 @@ void Game::event()
     }
 }
 
+void Game::PropagateEvent(EID e)
+{
 
+}
+
+void Game::MenuSelect()
+{
+    auto buffer = objectFactory->CreateObjectCapsule("stageSelect"
+        , "Data/stagebackground.png", { scrX / 2.f - 150,scrY / 2.f - 150 }, { 0,0 }, {}, MoveType::DEFAULT);
+    auto stageSelect = objectFactory->CreateObject<GameObject>(objectManager, renderer, buffer);
+
+    for (int i = 0; i < stageCleared.size(); ++i)
+    {
+        buffer = objectFactory->CreateObjectCapsule("stageButton" + std::to_string(1 + i),
+            "Data/Fonts/font.ttf", { scrX / 2.f - 150 + 50 * (i % 6), scrY / 2.f - 150 + 5 + 50 * (i / 6) },
+            { 0,0 }, {}, MoveType::DEFAULT);
+        auto textBuffer = objectFactory->CreateTextObjectCapsule(buffer, Text{ 36,{255,255,255},std::to_string(1 + i) });
+        auto stageButton = objectFactory->CreateTextObject<TextButton>(objectManager, renderer, textBuffer);
+        Event e;
+        e.eid = EID::TITLE_END;
+        stageButton->BindEvent(e);
+    }
+    stageSelect->InitFade(Fade::FADE_OUT, 60, 6);
+    stageSelectCalled = true;
+}
 
 void Game::state()
 {
@@ -332,17 +327,17 @@ void Game::titleEnter()
     if (!init)
     {
         SDL_Log("Title");
-        auto buffer = objectFactory->CreateObjectCreateBuffer("titleLogo",
+        auto buffer = objectFactory->CreateObjectCapsule("titleLogo",
             "Data/title.png", { 10,896 }, { 0,-10 }, { 10,0 }, MoveType::SQUARE);
         objectFactory->CreateMoveTargetObject<GameObject>(objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCreateBuffer
+        buffer = objectFactory->CreateObjectCapsule
         ("titleStartButtonOverlay", "Data/null.png",{ 374,250 }, { 0,0 }, {}, MoveType::SQUARE);
         objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCreateBuffer("titleStartButton", "Data/startbutton.png",
+        buffer = objectFactory->CreateObjectCapsule("titleStartButton", "Data/startbutton.png",
             { 374,796 }, { 0,-1 }, { 374,250 },MoveType::SQUARE);
         objectFactory->CreateMoveTargetObject<Button>(
             objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCreateBuffer("optionButton", "Data/option.png",
+        buffer = objectFactory->CreateObjectCapsule("optionButton", "Data/option.png",
             {10,scrY - 64 - 10.f},{0,0} , {}, MoveType::SQUARE);
         objectFactory->CreateObject<Button>(objectManager,renderer,buffer);
         init = true;
@@ -361,8 +356,8 @@ void Game::titleEnter()
         e.eid = EID::TITLE;
         eventHandler->PushEvent(std::make_shared<Event>(e));
         SDL_Log("title entry done.");
-        Event* ce = { new Event };
-        ce->eid = EID::TITLE_STAGE_SELECT_CALLED;
+        Event ce;
+        ce.eid = EID::TITLE_STAGE_SELECT_CALLED;
         startButton->BindEvent(ce);
     }
     auto square = objectManager->find("square");

@@ -12,9 +12,9 @@ public:
 	virtual ~Button() override;
 	// wrapping Function
 
-	void BindEvent(Event* e);
+	void BindEvent(Event& e);
 	void ClickEvent(std::unique_ptr<EventHandler>&);
 protected:
-	Event* _bind{ nullptr };
+	std::unique_ptr<Event> _bind;
 };
 
