@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <cmath>
+#include <unordered_map>
 
 #include "ObjectFactory.h"
 #include "ObjectManager.h"
@@ -37,7 +38,8 @@ public:
 private:
 	void event();
 	//Event related Function
-	void PropagateEvent(EID e);
+	void QueueEvent(EID e);
+	void BindEvent(std::shared_ptr<Button>const&b, EID e);
 	void MenuSelect();
 
 	void state();
@@ -50,6 +52,7 @@ private:
 
 	void titleEnter();
 	void title();
+	void interactButton(std::shared_ptr<Button> const& button);
 	void titleEnd();
 
 private:
@@ -70,6 +73,7 @@ private:
 	const int scrY{ 768 };
 
 	bool stageSelectCalled{ false };
+	std::unordered_map<std::string, bool> buttonActive;
 	std::vector<bool> stageCleared = {
 		true,false,false,false,false,false,
 		false,false,false,false,false,false,

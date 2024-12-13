@@ -154,9 +154,18 @@ void Game::event()
     }
 }
 
-void Game::PropagateEvent(EID e)
+void Game::QueueEvent(EID e)
 {
+    Event event;
+    event.eid = e;
+    eventHandler->PushEvent(std::make_shared<Event>(e));
+}
 
+void Game::BindEvent(std::shared_ptr<Button>const& b, EID e)
+{
+    Event event;
+    event.eid = e;
+    b->BindEvent(event);
 }
 
 void Game::MenuSelect()
@@ -172,9 +181,7 @@ void Game::MenuSelect()
             { 0,0 }, {}, MoveType::DEFAULT);
         auto textBuffer = objectFactory->CreateTextObjectCapsule(buffer, Text{ 36,{255,255,255},std::to_string(1 + i) });
         auto stageButton = objectFactory->CreateTextObject<TextButton>(objectManager, renderer, textBuffer);
-        Event e;
-        e.eid = EID::TITLE_END;
-        stageButton->BindEvent(e);
+        BindEvent(stageButton, EID::TITLE_END);
     }
     stageSelect->InitFade(Fade::FADE_OUT, 60, 6);
     stageSelectCalled = true;
@@ -327,27 +334,17 @@ void Game::titleEnter()
     if (!init)
     {
         SDL_Log("Title");
-        auto buffer = objectFactory->CreateObjectCapsule("titleLogo",
-            "Data/title.png", { 10,896 }, { 0,-10 }, { 10,0 }, MoveType::SQUARE);
-        objectFactory->CreateMoveTargetObject<GameObject>(objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCapsule
-        ("titleStartButtonOverlay", "Data/null.png",{ 374,250 }, { 0,0 }, {}, MoveType::SQUARE);
-        objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCapsule("titleStartButton", "Data/startbutton.png",
-            { 374,796 }, { 0,-1 }, { 374,250 },MoveType::SQUARE);
-        objectFactory->CreateMoveTargetObject<Button>(
-            objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCapsule("optionButton", "Data/option.png",
-            {10,scrY - 64 - 10.f},{0,0} , {}, MoveType::SQUARE);
-        objectFactory->CreateObject<Button>(objectManager,renderer,buffer);
+        objectFactory->CreateObjectsFromFile(objectManager, renderer, "Objects/title.obl");
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");
     auto startButton = std::dynamic_pointer_cast<Button>(objectManager->find("titleStartButton"));
+    auto editorButton = std::dynamic_pointer_cast<Button>(objectManager->find("editorButton"));
     if (titleTick < 60)
     {
         titleLogo->SetVelocity({ 0,titleTick /3 * -1 });
         startButton->SetVelocity({ 0,titleTick / 3 * - 1 });
+        editorButton->SetVelocity({ 0,titleTick / 3 * -1 });
     }
 
     if (titleLogo->isTargetEmpty() && startButton->isTargetEmpty())
@@ -371,51 +368,64 @@ void Game::title()
         if (std::shared_ptr<Button> startButton = std::dynamic_pointer_cast<Button>(
         objectManager->find("titleStartButton")))
         {
-            auto startButtonOverlay = objectManager->find("titleStartButtonOverlay");
-            if (startButton->is_hover(_mouse))
-            {
-                {
-                    if(startButton->isTargetEmpty() && startButtonOverlay->isTargetEmpty()){
-                        startButton->LoadImage(renderer,"Data/startbuttonActive.png");
-                        startButtonOverlay->LoadImage(renderer, "Data/startbuttonActiveOverlay.png");
-                        SDL_FRect hitbox = startButton->hitbox();
-                        hitbox.w = 200;
-                        startButton->PushTarget({ 344,250 });
-                        startButtonOverlay->PushTarget({ 344,250 });
-                        startButton->SetVelocity({ -10,0 });
-                        startButtonOverlay->SetVelocity({ -10,0});
-                        startButton->SetHitbox(hitbox);
-                        isStartButtonActive = true;
-                    }
-                }
-            }
-            else
-            {
-                if (startButton->isTargetEmpty() && startButtonOverlay->isTargetEmpty())
-                {
-                    startButton->LoadImage(renderer, "Data/startbutton.png");
-                    startButtonOverlay->LoadImage(renderer, "Data/null.png");
-                    SDL_FRect hitbox = startButton->hitbox();
-                    hitbox.w = 128;
-                    startButton->PushTarget({ 374,250 });
-                    startButton->SetVelocity({ 10,0 });
-                    startButtonOverlay->PushTarget({ 374,250 });
-                    startButtonOverlay->SetVelocity({ 10,0 });
-                    startButton->SetHitbox(hitbox);
-                    isStartButtonActive = false;
-                }
-            }
+            interactButton(startButton);
         }
+        if (std::shared_ptr<Button> editorButton = std::dynamic_pointer_cast<Button>
+            (objectManager->find("editorButton")))
+        {
+            interactButton(editorButton);
+        }
+        // set StageButtons
         if (objectManager->name_contains(object,"stageButton"))
         {
             auto stageButton = std::dynamic_pointer_cast<TextButton>(object);
             if (object->is_hover(_mouse))
-            {
                 stageButton->SetColor(renderer,{ 255,0,0 });
-            }
             else
-            {
                 stageButton->SetColor(renderer,{ 255,255,255 });
+        }
+    }
+}
+void Game::interactButton(std::shared_ptr<Button> const& button)
+{
+    auto buttonOverlay = objectManager->find(button->objectName() + "Overlay");
+    std::string fileNameNoExtender = button->fileName().substr(0,button->fileName().size() - 4);
+    if (button->is_hover(_mouse))
+    {
+        if (!buttonActive[button->objectName()])
+        {
+            if (button->isTargetEmpty() && buttonOverlay->isTargetEmpty()) {
+                button->LoadImage(renderer, fileNameNoExtender + "Active.png");
+                buttonOverlay->LoadImage(renderer, "Data/buttonOverlay.png");
+                SDL_FRect hitbox = button->hitbox();
+                hitbox.w = hitbox.w + 64;
+                SDL_FRect ogPos = button->posRect();
+                button->PushTarget({ ogPos.x - 30,ogPos.y });
+                buttonOverlay->PushTarget({ ogPos.x - 30,ogPos.y });
+                button->SetVelocity({ -10,0 });
+                buttonOverlay->SetVelocity({ -10,0 });
+                button->SetHitbox(hitbox);
+                buttonActive[button->objectName()] = true;
+            }
+        }
+    }
+    else
+    {
+        if (button->isTargetEmpty() && buttonOverlay->isTargetEmpty())
+        {
+            if (buttonActive[button->objectName()])
+            {
+                button->LoadImage(renderer, fileNameNoExtender.substr(0, fileNameNoExtender.size() - 6) + ".png");
+                buttonOverlay->LoadImage(renderer, "Data/null.png");
+                SDL_FRect hitbox = button->hitbox();
+                hitbox.w = 128;
+                SDL_FRect ogPos = button->posRect();
+                button->PushTarget({ ogPos.x + 30,ogPos.y });
+                button->SetVelocity({ 10,0 });
+                buttonOverlay->PushTarget({ ogPos.x + 30,ogPos.y });
+                buttonOverlay->SetVelocity({ 10,0 });
+                button->SetHitbox(hitbox);
+                buttonActive[button->objectName()] = false;
             }
         }
     }

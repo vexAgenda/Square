@@ -27,6 +27,7 @@ public:
 	bool SetVisible(bool visible) { _visible = visible; }
 
 	std::string objectName() { return _objectName; }
+	std::string fileName() { return _fileName; }
 	SDL_Color rectColor(){ return _rectColor; }
 	SDL_Texture* texture() { return _texture; }
 	const SDL_Rect imageRect() const { return _imageRect; }
