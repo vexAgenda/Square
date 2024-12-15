@@ -209,21 +209,13 @@ void GameObject::MoveExponential(float deltaTime)
 		return;
 	Vector2 velocity = _velocity.front();
 	if (velocity.x > 0)
-	{
 		_posRect.x += velocity.x * velocity.x * deltaTime;
-	}
 	else
-	{
 		_posRect.x += velocity.x * velocity.x * -1 *deltaTime;
-	}
 	if (velocity.y > 0)
-	{
 		_posRect.y += velocity.y * velocity.y * deltaTime;
-	}
 	else
-	{
 		_posRect.y += velocity.y * velocity.y * -1 * deltaTime;
-	}
 	_hitbox.x = _posRect.x;
 	_hitbox.y = _posRect.y;
 }

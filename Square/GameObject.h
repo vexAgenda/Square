@@ -22,9 +22,9 @@ public:
 	const int currentFade() { return _currentFade; }
 	void SetCurrentFade(int amount) { _currentFade = amount; }
 	void SetFadeAmount(int amount) { _fadeAmount = amount; }
-	const int fadeAmount() { return _fadeAmount; }
+	constexpr int fadeAmount() { return _fadeAmount; }
 	void InitFade(Fade fadeType, int currentFade, int amount);
-	bool SetVisible(bool visible) { _visible = visible; }
+	void SetVisible(bool visible) { _visible = visible; }
 
 	std::string objectName() { return _objectName; }
 	std::string fileName() { return _fileName; }
@@ -33,7 +33,10 @@ public:
 	const SDL_Rect imageRect() const { return _imageRect; }
 	const SDL_FRect posRect() const { return _posRect; }
 	const SDL_FRect hitbox() const { return _hitbox; }
-	const bool visible() { return _visible; }
+	const bool visible() const { return _visible; }
+	const bool isActive() const { return _active; }
+	void Activate() { _active = true; }
+	void Deactivate() { _active = false; }
 	const double angle() { return _angle; }
 	void SetHitbox(const SDL_FRect& rect)
 	{
@@ -70,6 +73,8 @@ protected:
 	SDL_FRect _posRect{};
 	SDL_FRect _hitbox{};
 	double _angle{0.f};
+
+	bool _active{ true };
 	//texture fade
 	int _fadeAmount{ 0 };
 	int _currentFade{ 0 };
