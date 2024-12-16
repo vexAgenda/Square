@@ -24,7 +24,20 @@ enum class GameState
 	RUN_ENTER,
 	RUN,
 	RUN_END,
+	EDITOR,
 	END
+};
+
+enum class EditorMode
+{
+	NEUTRAL,
+	PLACE_WALL,
+	PLACE_HOSTILE,
+	PLACE_START_POS,
+	PLACE_END_POS,
+	SET_PATH,
+	REVERT,
+	REDO
 };
 
 class Game
@@ -53,6 +66,7 @@ private:
 	void input();
 	// input event left click.
 	void OnLeftClick();
+	void OnMouseMove();
 	void update();
 
 	void render();
@@ -62,7 +76,7 @@ private:
 	//==============================
 	// Game Behaviours
 	//==============================
-	
+
 	// Intro screen
 	void splash();
 	void titleEnter();
@@ -70,14 +84,20 @@ private:
 	void interactButton(std::shared_ptr<Button> const& button);
 	void titleEnd(const std::string& info);
 	void load(const std::string& info);
-
 	void runEnter();
-
+	//=============================
+	// Editor Behaviours
+	void editor();
+	void ChangeMode(EditorMode mode);
 	//===========================
 	// Macro Function
 	//===========================
 	// check if string is number.
 	bool isnumber(const std::string& str);
+	// binds all button events when the editor loads.
+	void editorBind();
+	// enables all button.
+	void enableButtons();
 private:
 	SDL_Window* window{};
 	SDL_Renderer* renderer{};
@@ -87,9 +107,24 @@ private:
 	std::unique_ptr<ObjectFactory> objectFactory;
 
 	bool bRun{ true };
-	int Fade{ 0 };
+	//====================
+	// Variables for game loop
+	//====================
+	int tick{ 0 };
+	int fadeTick{ 0 };
+	bool loadInit{ false };
+	bool runInit{ false };
+
+	//====================
+	// Variables for editor
+	bool isPlacing{ false };
+	Vector2 placeStartPos{};
+	Vector2 placeEndPos{};
+	int objectCount;
+	//========================
 	Uint32 curTick{};
 	GameState gameState{ GameState::START };
+	EditorMode editorMode{ EditorMode::NEUTRAL };
 	Vector2 _mouse{};
 
 	const int scrX{ 512 };
@@ -113,4 +148,3 @@ private:
 	const double rad_MIN = 0;
 	int mapIndex = 0;
 };
-

@@ -14,7 +14,7 @@ public:
 	GameObject(const std::string& name);
 	virtual ~GameObject();
 
-	bool MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect,const SDL_Color& rectColor);
+	bool MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect, const SDL_Color& rectColor);
 	virtual bool LoadImage(SDL_Renderer* renderer, const std::string& str);
 
 	Fade fadeType() { return _fadeType; }
@@ -28,13 +28,16 @@ public:
 
 	std::string objectName() { return _objectName; }
 	std::string fileName() { return _fileName; }
-	SDL_Color rectColor(){ return _rectColor; }
+	SDL_Color rectColor() { return _rectColor; }
 	SDL_Texture* texture() { return _texture; }
 	const SDL_Rect imageRect() const { return _imageRect; }
 	const SDL_FRect posRect() const { return _posRect; }
 	const SDL_FRect hitbox() const { return _hitbox; }
 	const bool visible() const { return _visible; }
 	const bool isActive() const { return _active; }
+	const bool isFluctuate() const { return _fluctuate; }
+	const bool hasTarget() const;
+
 	void Activate() { _active = true; }
 	void Deactivate() { _active = false; }
 	const double angle() { return _angle; }
@@ -42,11 +45,12 @@ public:
 	{
 		_hitbox = rect;
 	}
+	void SetFluctuate(bool fluctuate) { _fluctuate = fluctuate; }
 
 	//Move related function
-	void InitMove(const Vector2F& initPos, const Vector2F& velocity,const MoveType& mType);
+	void InitMove(const Vector2F& initPos, const Vector2F& velocity, const MoveType& mType);
 	void SetPos(const Vector2F& pos);
-	void SetVelocity(const Vector2& vel,bool isStatic = true);
+	void SetVelocity(const Vector2& vel, bool isStatic = true);
 	void SetMoveType(const MoveType& mType);
 	void Move(float deltaTime);
 	void MoveTargetted(float deltaTime);
@@ -66,15 +70,16 @@ protected:
 	std::string _objectName{};
 	std::string _fileName{};
 
-	SDL_Color _rectColor{0,0,0};
+	SDL_Color _rectColor{ 0,0,0 };
 
 	SDL_Texture* _texture{ nullptr };
 	SDL_Rect _imageRect{};
 	SDL_FRect _posRect{};
 	SDL_FRect _hitbox{};
-	double _angle{0.f};
+	double _angle{ 0.f };
 
 	bool _active{ true };
+	bool _fluctuate{ false };
 	//texture fade
 	int _fadeAmount{ 0 };
 	int _currentFade{ 0 };
@@ -89,6 +94,4 @@ protected:
 
 	//rotate related
 	int _rotate_amount{ 0 };
-
-
 };

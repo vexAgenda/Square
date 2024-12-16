@@ -23,4 +23,3 @@ std::shared_ptr<Event> EventHandler::PopEvent()
 	_events.pop();
 	return p;
 }
-

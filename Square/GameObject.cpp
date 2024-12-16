@@ -1,16 +1,13 @@
-
 #include "GameObject.h"
-
 
 GameObject::GameObject()
 {
-	_velocity.push({0, 0});
+	_velocity.push({ 0, 0 });
 }
 
 GameObject::GameObject(const std::string& name)
-: _objectName{name}
+	: _objectName{ name }
 {
-
 }
 
 GameObject::~GameObject()
@@ -18,14 +15,14 @@ GameObject::~GameObject()
 	SDL_DestroyTexture(_texture);
 }
 
-bool GameObject::MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect , const SDL_Color& rectColor)
+bool GameObject::MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect, const SDL_Color& rectColor)
 {
 	SDL_Surface* _surface = SDL_CreateRGBSurface
 	(0, rect.w, rect.h, 32,
 		rectColor.r, rectColor.g, rectColor.b, rectColor.a);
 	if (!_surface)
 	{
-		SDL_Log("surface invalid : %s" ,SDL_GetError());
+		SDL_Log("surface invalid : %s", SDL_GetError());
 	}
 	_rectColor = rectColor;
 	_imageRect = rect;
@@ -41,7 +38,7 @@ bool GameObject::MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect , const S
 	return true;
 }
 
-bool GameObject::LoadImage(SDL_Renderer* renderer,const std::string& str)
+bool GameObject::LoadImage(SDL_Renderer* renderer, const std::string& str)
 {
 	SDL_Surface* _surface = IMG_Load(str.c_str());
 	if (_fileName == str)
@@ -63,7 +60,6 @@ bool GameObject::LoadImage(SDL_Renderer* renderer,const std::string& str)
 	if (_texture == NULL)
 	{
 		SDL_Log("Failed to Create Texture : %s", SDL_GetError());
-
 	}
 	SDL_FreeSurface(_surface);
 	return true;
@@ -76,6 +72,11 @@ void GameObject::InitFade(Fade fadeType, int currentFade, int amount)
 	SetFadeAmount(amount);
 }
 
+const bool GameObject::hasTarget() const
+{
+	return !_targetCoords.empty();
+}
+
 void GameObject::InitMove(const Vector2F& initPos, const Vector2F& velocity, const MoveType& mType)
 {
 	SetPos(initPos);
@@ -84,7 +85,6 @@ void GameObject::InitMove(const Vector2F& initPos, const Vector2F& velocity, con
 	vel.y = velocity.y;
 	SetVelocity(vel);
 	SetMoveType(mType);
-
 }
 
 void GameObject::SetPos(const Vector2F& pos)
@@ -93,11 +93,11 @@ void GameObject::SetPos(const Vector2F& pos)
 	_posRect.y = pos.y;
 }
 
-void GameObject::SetVelocity(const Vector2& vel,bool isStatic)
+void GameObject::SetVelocity(const Vector2& vel, bool isStatic)
 {
 	if (_velocity.empty())
 		_velocity.push(vel);
- 	if (isStatic)
+	if (isStatic)
 		_velocity.front() = vel;
 	else
 		_velocity.push(vel);
@@ -131,7 +131,7 @@ void GameObject::MoveTargetted(float deltaTime)
 	{
 		_isTargetted = false;
 		_velocity.front() = { 0,0 };
-		SDL_Log("%s : Move Done!",_objectName.c_str());
+		SDL_Log("%s : Move Done!", _objectName.c_str());
 		return;
 	}
 	Vector2F target = _targetCoords.front();
@@ -174,20 +174,18 @@ void GameObject::PushTarget(const Vector2F& pos)
 
 bool GameObject::is_hover(const Vector2& mouse)
 {
-
 	return mouse.x >= _hitbox.x &&
 		mouse.x <= _hitbox.x + _hitbox.w &&
 		mouse.y >= _hitbox.y &&
 		mouse.y <= _hitbox.y + _hitbox.h;
-
 }
 
 void GameObject::Rotate()
 {
 	double nextAngle = _angle + _rotate_amount / 180.f * M_PI;
 	if (nextAngle < 0)
-		nextAngle += 2 * (std::abs(_rotate_amount) /360 + 1) * M_PI;
-	else if(nextAngle > 2 * M_PI)
+		nextAngle += 2 * (std::abs(_rotate_amount) / 360 + 1) * M_PI;
+	else if (nextAngle > 2 * M_PI)
 		nextAngle -= 2 * (std::abs(_rotate_amount) / 360) * M_PI;
 	_angle = nextAngle;
 }
@@ -211,7 +209,7 @@ void GameObject::MoveExponential(float deltaTime)
 	if (velocity.x > 0)
 		_posRect.x += velocity.x * velocity.x * deltaTime;
 	else
-		_posRect.x += velocity.x * velocity.x * -1 *deltaTime;
+		_posRect.x += velocity.x * velocity.x * -1 * deltaTime;
 	if (velocity.y > 0)
 		_posRect.y += velocity.y * velocity.y * deltaTime;
 	else

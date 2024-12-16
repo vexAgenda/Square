@@ -34,11 +34,9 @@ struct Color
 	int a = 255;
 };
 
-
 struct Text
 {
 	int _ptSize{ 0 };
 	SDL_Color _fontColor{};
 	std::string _msg{};
 };
-

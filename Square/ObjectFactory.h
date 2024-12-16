@@ -48,7 +48,7 @@ public:
 	~ObjectFactory() {};
 
 	//File I/O function
-	bool CreateObjectsFromFile(std::unique_ptr<ObjectManager>const&,SDL_Renderer* renderer,const std::string& fileName);
+	bool CreateObjectsFromFile(std::unique_ptr<ObjectManager>const&, SDL_Renderer* renderer, const std::string& fileName);
 	// object-related
 	ObjectCapsule CreateObjectCapsule(const std::string& objectName,
 		const std::string& fileName, Vector2F originPos, Vector2F velocity,
@@ -60,20 +60,20 @@ public:
 
 	// CreateObject Functions
 	template <typename T>
-	std::shared_ptr<T> CreateObject(std::unique_ptr<ObjectManager>const& objectManager,SDL_Renderer*
-		renderer,const ObjectCapsule& buffer)
+	std::shared_ptr<T> CreateObject(std::unique_ptr<ObjectManager>const& objectManager, SDL_Renderer*
+		renderer, const ObjectCapsule& buffer)
 	{
 		auto object = std::make_shared<T>(buffer._objectName);
 		objectManager->AddObject(object);
 		object->LoadImage(renderer, buffer._fileName);
-		object->InitMove(buffer._originPos,buffer._velocity, buffer._mType);
+		object->InitMove(buffer._originPos, buffer._velocity, buffer._mType);
 		return object;
 	}
 	template <typename T>
 	std::shared_ptr<T> CreateMoveTargetObject(std::unique_ptr<ObjectManager>const& objectManager, SDL_Renderer* renderer,
 		const ObjectCapsule& buffer)
 	{
-		auto object = CreateObject<T>(objectManager,renderer,buffer);
+		auto object = CreateObject<T>(objectManager, renderer, buffer);
 		object->PushTarget(buffer._targetPos);
 		return object;
 	}
@@ -81,24 +81,23 @@ public:
 	std::shared_ptr<T> CreateTextObject(std::unique_ptr<ObjectManager>const& objectManager, SDL_Renderer* renderer,
 		const TextObjectCapsule& buffer)
 	{
-
 		auto object = std::make_shared<T>(buffer._objectCapsule._objectName);
 		object->PreloadInit(buffer._text);
 		objectManager->AddObject(object);
 		object->LoadImage(renderer, buffer._objectCapsule._fileName);
-		object->InitMove(buffer._objectCapsule._originPos,buffer._objectCapsule._velocity,
+		object->InitMove(buffer._objectCapsule._originPos, buffer._objectCapsule._velocity,
 			buffer._objectCapsule._mType);
 		return object;
 	}
 
 	template <typename T>
-	std::shared_ptr<T> CreateRect(std::unique_ptr<ObjectManager>const& objectManager,SDL_Renderer*renderer,
+	std::shared_ptr<T> CreateRect(std::unique_ptr<ObjectManager>const& objectManager, SDL_Renderer* renderer,
 		const RectObjectCapsule& rectObject)
 	{
 		auto object = std::make_shared<T>(rectObject._objectCapsule._objectName);
 		objectManager->AddObject(object);
-		SDL_Rect rect{0,0,rectObject._widthHeight.x,rectObject._widthHeight.y};
-		object->MakeRect(renderer,rect, rectObject._rectColor);
+		SDL_Rect rect{ 0,0,rectObject._widthHeight.x,rectObject._widthHeight.y };
+		object->MakeRect(renderer, rect, rectObject._rectColor);
 		object->InitMove(rectObject._objectCapsule._originPos, rectObject._objectCapsule._velocity,
 			rectObject._objectCapsule._mType);
 		return object;
@@ -107,7 +106,7 @@ public:
 	std::shared_ptr<T> CreateMoveTargetRect(std::unique_ptr<ObjectManager>const& objectManager, SDL_Renderer* renderer,
 		const RectObjectCapsule& rectObject)
 	{
-		std::shared_ptr<T> object = CreateRect<T>(objectManager,renderer,rectObject);
+		std::shared_ptr<T> object = CreateRect<T>(objectManager, renderer, rectObject);
 		object->PushTarget(rectObject._objectCapsule._targetPos);
 		return object;
 	}
@@ -119,4 +118,3 @@ private:
 	void ReadVector2F(std::ifstream& in, Vector2F& vector2f);
 	ObjectIOCapsule ReadObjectFromFile(std::ifstream& in);
 };
-

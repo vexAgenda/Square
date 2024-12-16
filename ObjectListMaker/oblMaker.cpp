@@ -69,12 +69,12 @@ struct Text
 	std::string _msg;
 	friend std::ostream& operator<<(std::ostream& os, Text& text)
 	{
-		return os << text._ptSize << " " << text._fontColor << " " << text._msg << '\n'; 
+		return os << text._ptSize << " " << text._fontColor << " " << text._msg << '\n';
 	}
 	friend std::istream& operator>>(std::istream& is, Text& text)
 	{
 		return is >> text._ptSize >> text._fontColor >> text._msg;
- 	}
+	}
 };
 
 struct ObjectBuffer
@@ -84,7 +84,7 @@ struct ObjectBuffer
 	std::string _fileName{};
 	bool hasText{};
 	Text _text{};
-	Vector2F _originPos{} ;
+	Vector2F _originPos{};
 	Vector2F _velocity{};
 	bool hasTarget{ false };
 	Vector2F _targetPos{};
@@ -104,7 +104,6 @@ void CreateTarget(ObjectBuffer& object)
 			object.hasTarget = true;
 			std::cout << "Enter Target's position" << '\n';
 			std::cin >> object._targetPos;
-
 			break;
 		}
 		else if (answer == "n")
@@ -141,7 +140,7 @@ void CreateRect(ObjectBuffer& object)
 	}
 }
 
-void WriteToFile(std::ofstream& out,ObjectBuffer& buffer);
+void WriteToFile(std::ofstream& out, ObjectBuffer& buffer);
 void WriteString(std::ofstream& out, std::string& string);
 void WriteColor(std::ofstream& out, Color& color);
 void WriteVector2(std::ofstream& out, Vector2& vector2);
@@ -158,12 +157,12 @@ int main(void)
 	{
 		std::string command;
 		std::cout << "Object List Maker" << '\n';
-		std::cout << "Add Delete Edit Save Load" <<'\n';
+		std::cout << "Add Delete Edit Save Load" << '\n';
 		std::cout << "======================" << '\n';
 
 		for (int i = 0; i < objects.size(); ++i)
 		{
-			std::print(std::cout,"{}. {} | {} | File Location: {}\n", i, objects[i]._objectName, objects[i]._type,objects[i]._fileName);
+			std::print(std::cout, "{}. {} | {} | File Location: {}\n", i, objects[i]._objectName, objects[i]._type, objects[i]._fileName);
 			if (objects[i]._type.contains("Text"))
 			{
 				std::print(std::cout, "Point Size: {}px, Font Color [R: {}, G: {}, B: {}, A: {}], Message: \"{}\"\n", objects[i]._text._ptSize,
@@ -177,11 +176,10 @@ int main(void)
 			std::print(std::cout, "is Rect: {}\n", objects[i].isRect);
 			if (objects[i].isRect)
 			{
-				std::print(std::cout,"Width: {} Height: {}, Rect Color[R: {}, G: {}, B: {}, A: {}]\n",objects[i]._widthHeight.x,objects[i]._widthHeight.y,
-					objects[i]._rectColor.r, objects[i]._rectColor.g, objects[i]._rectColor.b,objects[i]._rectColor.a);
+				std::print(std::cout, "Width: {} Height: {}, Rect Color[R: {}, G: {}, B: {}, A: {}]\n", objects[i]._widthHeight.x, objects[i]._widthHeight.y,
+					objects[i]._rectColor.r, objects[i]._rectColor.g, objects[i]._rectColor.b, objects[i]._rectColor.a);
 			}
-			std::print(std::cout, "Move Type: {}\n",objects[i]._mType);
-
+			std::print(std::cout, "Move Type: {}\n", objects[i]._mType);
 		}
 		std::cout << "======================" << '\n';
 		std::cout << "> ";
@@ -212,13 +210,12 @@ int main(void)
 			std::cout << "Enter Origin Velocity" << '\n';
 			std::cin >> object._velocity;
 			std::cout << "Does this object have target? (y/n)" << '\n';
-			CreateTarget(object); 
+			CreateTarget(object);
 			std::cout << "Is this object just rect? (y/n)" << '\n';
 			CreateRect(object);
 			std::cout << "choose movetype : default | square" << '\n';
 			std::cin >> object._mType;
 			objects.push_back(object);
-			
 		}
 		else if (command == "Delete")
 		{
@@ -237,7 +234,7 @@ int main(void)
 			int where;
 			std::cout << "Edit which? (0 ~ " << objects.size() - 1 << ")\n";
 			std::cin >> where;
-			if (where > objects.size() - 1|| where < 0)
+			if (where > objects.size() - 1 || where < 0)
 				std::cout << "invalid index\n";
 			else
 			{
@@ -282,7 +279,7 @@ int main(void)
 			out.write(reinterpret_cast<char*>(&size), sizeof(size));
 			for (auto& object : objects)
 			{
-				WriteToFile(out,object);
+				WriteToFile(out, object);
 			}
 		}
 		else if (command == "Load")
@@ -307,14 +304,13 @@ int main(void)
 			{
 				std::cout << "file not exists" << '\n';
 			}
-
 		}
 		system("timeout -1");
 		system("cls");
 	}
 }
 
-void WriteToFile(std::ofstream& out,ObjectBuffer& buffer)
+void WriteToFile(std::ofstream& out, ObjectBuffer& buffer)
 {
 	WriteString(out, buffer._type);
 	WriteString(out, buffer._objectName);
@@ -341,7 +337,6 @@ void WriteToFile(std::ofstream& out,ObjectBuffer& buffer)
 
 void WriteString(std::ofstream& out, std::string& string)
 {
-
 	size_t size = string.size();
 	out.write(reinterpret_cast<char*>(&size), sizeof(size));
 	out.write(string.c_str(), size);
@@ -365,7 +360,6 @@ void WriteVector2F(std::ofstream& out, Vector2F& vector2f)
 {
 	out.write(reinterpret_cast<char*>(&vector2f.x), sizeof(float));
 	out.write(reinterpret_cast<char*>(&vector2f.y), sizeof(float));
-
 }
 
 ObjectBuffer ReadFile(std::ifstream& in)
@@ -420,5 +414,4 @@ void ReadVector2F(std::ifstream& in, Vector2F& vector2f)
 {
 	in.read(reinterpret_cast<char*>(&vector2f.x), sizeof(float));
 	in.read(reinterpret_cast<char*>(&vector2f.y), sizeof(float));
-
 }
