@@ -327,19 +327,7 @@ void Game::titleEnter()
     if (!init)
     {
         SDL_Log("Title");
-        auto buffer = objectFactory->CreateObjectCapsule("titleLogo",
-            "Data/title.png", { 10,896 }, { 0,-10 }, { 10,0 }, MoveType::SQUARE);
-        objectFactory->CreateMoveTargetObject<GameObject>(objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCapsule
-        ("titleStartButtonOverlay", "Data/null.png",{ 374,250 }, { 0,0 }, {}, MoveType::SQUARE);
-        objectFactory->CreateObject<GameObject>(objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCapsule("titleStartButton", "Data/startbutton.png",
-            { 374,796 }, { 0,-1 }, { 374,250 },MoveType::SQUARE);
-        objectFactory->CreateMoveTargetObject<Button>(
-            objectManager,renderer,buffer);
-        buffer = objectFactory->CreateObjectCapsule("optionButton", "Data/option.png",
-            {10,scrY - 64 - 10.f},{0,0} , {}, MoveType::SQUARE);
-        objectFactory->CreateObject<Button>(objectManager,renderer,buffer);
+        objectFactory->CreateObjectsFromFile(objectManager, renderer, "Objects/titleEnter.obl");
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");

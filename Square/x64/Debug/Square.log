@@ -1,9 +1,2 @@
 ﻿  Game.cpp
-  ObjectFactory.cpp
-D:\repos\Square\Square\ObjectFactory.cpp(80,65): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
-D:\repos\Square\Square\ObjectFactory.cpp(80,86): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
-D:\repos\Square\Square\ObjectFactory.cpp(80,107): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
-  ObjectManager.cpp
-  main.cpp
-  코드를 생성하고 있습니다...
-  Square.vcxproj -> D:\repos\Square\x64\Debug\Square.exe
+  Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe
