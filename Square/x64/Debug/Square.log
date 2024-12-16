@@ -1,2 +1,6 @@
 ﻿  Game.cpp
+<<<<<<< HEAD
   Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe
+=======
+  Square.vcxproj -> D:\repos\Square\x64\Debug\Square.exe
+>>>>>>> 64e9fd7bd13a277324e0b42e0cf18d53b0e8f359

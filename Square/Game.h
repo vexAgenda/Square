@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <cmath>
+#include <unordered_map>
 
 #include "ObjectFactory.h"
 #include "ObjectManager.h"
@@ -19,6 +20,7 @@ enum class GameState
 	TITLE,
 	TITLE_ENTER,
 	TITLE_END,
+	LOAD,
 	RUN_ENTER,
 	RUN,
 	RUN_END,
@@ -30,28 +32,52 @@ class Game
 public:
 	Game();
 	bool init();
-
-	void splash();
 	void run();
 	void quit();
 private:
 	void event();
+	//============================
 	//Event related Function
-	void PropagateEvent(EID e);
+	//============================
+
+	//Queues event to game.
+	void QueueEvent(EID e, const std::string& info = {});
+	//Binds event to button.
+	void BindEvent(std::shared_ptr<Button>const& b, EID e, const std::string& info = {});
+	//Menu select Function.
 	void MenuSelect();
 
+	// makes to behave alongs to the state of game.
 	void state();
+	// reads input from the keyboard device.
 	void input();
+	// input event left click.
+	void OnLeftClick();
 	void update();
 
 	void render();
 	void renderTextureFadeOut(std::shared_ptr<GameObject> object);
 	void renderTextureFadeIn(std::shared_ptr<GameObject> object);
 
+	//==============================
+	// Game Behaviours
+	//==============================
+	
+	// Intro screen
+	void splash();
 	void titleEnter();
 	void title();
-	void titleEnd();
+	void interactButton(std::shared_ptr<Button> const& button);
+	void titleEnd(const std::string& info);
+	void load(const std::string& info);
 
+	void runEnter();
+
+	//===========================
+	// Macro Function
+	//===========================
+	// check if string is number.
+	bool isnumber(const std::string& str);
 private:
 	SDL_Window* window{};
 	SDL_Renderer* renderer{};
@@ -69,7 +95,11 @@ private:
 	const int scrX{ 512 };
 	const int scrY{ 768 };
 
+	int cameraX{ 0 };
+	int cameraY{ 0 };
+
 	bool stageSelectCalled{ false };
+	std::unordered_map<std::string, bool> buttonActive;
 	std::vector<bool> stageCleared = {
 		true,false,false,false,false,false,
 		false,false,false,false,false,false,
@@ -77,6 +107,7 @@ private:
 		false,false,false,false,false,false,
 		false,false,false,false,false,false,
 	};
+	std::string currentEventInfo{};
 
 	const double rad_MAX = 2 * M_PI;
 	const double rad_MIN = 0;

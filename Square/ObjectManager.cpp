@@ -31,6 +31,24 @@ void ObjectManager::Flush()
 	_objects.clear();
 }
 
+void ObjectManager::SetVisibleAll(bool visible)
+{
+	for (auto object : _objects)
+		object->SetVisible(visible);
+}
+
+void ObjectManager::ActivateAll()
+{
+	for (auto object : _objects)
+		object->Activate();
+}
+
+void ObjectManager::DeactivateAll()
+{
+	for (auto object : _objects)
+		object->Deactivate();
+}
+
 std::shared_ptr<GameObject> ObjectManager::find(const std::string& objectName)
 {
 	for (auto object : _objects)

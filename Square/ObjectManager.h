@@ -14,6 +14,10 @@ public:
 	void DeleteObject(std::shared_ptr<GameObject>);
 	void Flush();
 
+	void SetVisibleAll(bool visible);
+	void ActivateAll();
+	void DeactivateAll();
+
 	auto& operator[](int i) { return _objects[i]; }
 	std::shared_ptr<GameObject> find(const std::string& textureName);
 	bool name_contains(std::shared_ptr<GameObject> obj,const std::string& name);

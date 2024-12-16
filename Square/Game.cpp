@@ -4,7 +4,8 @@
 #include "TextButton.h"
 #include "SDL/SDL_ttf.h"
 
-#include <fstream>
+#include <cctype>
+#include <algorithm>
 
 Game::Game() :
     objectManager{ new ObjectManager{}},
@@ -73,10 +74,8 @@ bool Game::init()
 void Game::splash()
 {
     static int splashTick{ 0 };
-    static Uint32 splashcurTick{ 0 };
     auto splash = objectManager->find("splash");
     auto square = objectManager->find("square");
-    //add splash logo object
     if (splashTick == 0)
     {
         splash->InitFade(Fade::FADE_OUT, 60, 4);
@@ -128,6 +127,9 @@ void Game::event()
 {
     while (auto e = eventHandler->PopEvent())
     {
+
+        if (!e->info.empty())
+            currentEventInfo = e->info;
         switch (e->eid)
         {
         case EID::SPLASH:
@@ -150,13 +152,31 @@ void Game::event()
         case EID::TITLE_END:
             gameState = GameState::TITLE_END;
             break;
+        case EID::LOAD:
+            gameState = GameState::LOAD;
+            break;
+        case EID::LOAD_COMPLETE:
+            gameState = GameState::RUN_ENTER;
+            break;
         }
     }
 }
 
-void Game::PropagateEvent(EID e)
+void Game::QueueEvent(EID e,const std::string& info)
 {
+    Event event;
+    event.eid = e;
+    event.info = info;
+    eventHandler->PushEvent(std::make_shared<Event>(e));
+}
 
+//Binds
+void Game::BindEvent(std::shared_ptr<Button>const& b, EID e, const std::string& info)
+{
+    Event event;
+    event.eid = e;
+    event.info = info;
+    b->BindEvent(event);
 }
 
 void Game::MenuSelect()
@@ -172,9 +192,7 @@ void Game::MenuSelect()
             { 0,0 }, {}, MoveType::DEFAULT);
         auto textBuffer = objectFactory->CreateTextObjectCapsule(buffer, Text{ 36,{255,255,255},std::to_string(1 + i) });
         auto stageButton = objectFactory->CreateTextObject<TextButton>(objectManager, renderer, textBuffer);
-        Event e;
-        e.eid = EID::TITLE_END;
-        stageButton->BindEvent(e);
+        BindEvent(stageButton, EID::TITLE_END,std::to_string(i + 1));
     }
     stageSelect->InitFade(Fade::FADE_OUT, 60, 6);
     stageSelectCalled = true;
@@ -194,8 +212,22 @@ void Game::state()
         title();
         break;
     case GameState::TITLE_END:
-        titleEnd();
+        titleEnd(currentEventInfo);
         break;
+    case GameState::LOAD:
+    {
+        static bool loadInit{ false };
+        if (!loadInit)
+        {
+            load(currentEventInfo);
+            loadInit = true;
+        }
+        break;
+    }
+    case GameState::RUN_ENTER:
+        runEnter();
+        break;
+
     }
 }
 
@@ -215,44 +247,10 @@ void Game::input()
             switch (event.button.button)
             {
             case SDL_BUTTON_LEFT:
-            {
-                for (auto object : objectManager->objects())
-                {
-                    if (!object)
-                        SDL_Log("empty!");
-                    if (auto button = std::dynamic_pointer_cast<Button>(object))
-                    {
-                        if (button->is_hover(_mouse))
-                        {
-                            button->ClickEvent(eventHandler);
-                        }
-                    }
-
-                    if (auto object = objectManager->find("stageSelect"))
-                    {
-                        if (!object->is_hover(_mouse) && stageSelectCalled)
-                        {
-                            object->InitFade(Fade::FADE_IN, 60, 6);
-                            objectManager->DeleteObject(object);
-                            for (int i = 0; i < stageCleared.size(); ++i)
-                            {
-                                auto object = objectManager->find("stageButton" + std::to_string(i + 1));
-                                objectManager->DeleteObject(object);
-                            }
-                            stageSelectCalled = false;
-                        }
-                    }
-                    if (objectManager->name_contains(object,"stageButton"))
-                    {
-                        if (object->is_hover(_mouse))
-                        {
-                            mapIndex = std::stoi(object->objectName().substr(11));
-                            SDL_Log("%d", mapIndex);
-                        }
-                    }
-                }
+                OnLeftClick();
+                break;
             }
-            }
+    
             break;
         }
     }
@@ -261,30 +259,63 @@ void Game::input()
 
 }
 
+void Game::OnLeftClick()
+{
+    for (auto object : objectManager->objects())
+    {
+        if (!object)
+            SDL_Log("empty!");
+        if (auto button = std::dynamic_pointer_cast<Button>(object))
+        {
+            if (button->is_hover(_mouse))
+                button->ClickEvent(eventHandler);
+        }
+
+        if (auto object = objectManager->find("stageSelect"))
+        {
+            if (!object->is_hover(_mouse) && stageSelectCalled)
+            {
+                object->InitFade(Fade::FADE_IN, 60, 6);
+                objectManager->DeleteObject(object);
+                for (int i = 0; i < stageCleared.size(); ++i)
+                {
+                    auto object = objectManager->find("stageButton" + std::to_string(i + 1));
+                    objectManager->DeleteObject(object);
+                }
+                stageSelectCalled = false;
+            }
+        }
+    }
+}
+
 void Game::render()
 {
     SDL_RenderClear(renderer);
     for (auto object : objectManager->objects())
     {
-        SDL_Rect rect = object->imageRect();
-        SDL_FRect posRect = object->posRect();
-        SDL_QueryTexture(object->texture(), NULL, NULL, &rect.w,
-            &rect.h);
-        SDL_SetTextureBlendMode(object->texture(), SDL_BLENDMODE_BLEND);
-        switch (object->fadeType())
+        if (object->visible())
         {
-        case Fade::FADE_IN:
-            renderTextureFadeIn(object);
-            break;
-        case Fade::FADE_OUT:
-            renderTextureFadeOut(object);
-            break;
-        }
-        if (SDL_RenderCopyExF(renderer, object->texture(),
-            &rect, &posRect, object->angle(), NULL, SDL_FLIP_NONE)
-            != 0)
-        {
-            SDL_Log("Render Failed: %s", SDL_GetError());
+            SDL_Rect rect = object->imageRect();
+            SDL_FRect posRect = object->posRect();
+            SDL_QueryTexture(object->texture(), NULL, NULL, &rect.w,
+                &rect.h);
+            SDL_SetTextureBlendMode(object->texture(), SDL_BLENDMODE_BLEND);
+            switch (object->fadeType())
+            {
+            case Fade::FADE_IN:
+                renderTextureFadeIn(object);
+                break;
+            case Fade::FADE_OUT:
+                renderTextureFadeOut(object);
+                break;
+            }
+
+            if (SDL_RenderCopyExF(renderer, object->texture(),
+                &rect, &posRect, object->angle(), NULL, SDL_FLIP_NONE)
+                != 0)
+            {
+                SDL_Log("Render Failed: %s", SDL_GetError());
+            }
         }
     }
     SDL_RenderPresent(renderer);
@@ -296,9 +327,7 @@ void Game::renderTextureFadeOut(std::shared_ptr<GameObject> object)
     int currentFade = object->currentFade();
     const int fadeAmount = object->fadeAmount();
     if (fadeAmount * currentFade > 255)
-    {
         currentFade = 255 / fadeAmount;
-    }
     if (object->currentFade() > 0)
     {
         SDL_SetTextureAlphaMod(object->texture(), 255 - fadeAmount * currentFade);
@@ -310,9 +339,7 @@ void Game::renderTextureFadeIn(std::shared_ptr<GameObject> object)
     int currentFade = object->currentFade();
     const int fadeAmount = object->fadeAmount();
     if (fadeAmount * currentFade > 255)
-    {
         currentFade = 255 / fadeAmount;
-    }
     if (object->currentFade() > 0)
     {
         SDL_SetTextureAlphaMod(object->texture(), fadeAmount * currentFade);
@@ -323,125 +350,171 @@ void Game::titleEnter()
 {
     static bool init{ false };
     static int titleTick{ 0 };
-    static bool isButtonActive{ false };
     if (!init)
     {
         SDL_Log("Title");
-        objectFactory->CreateObjectsFromFile(objectManager, renderer, "Objects/titleEnter.obl");
+        objectFactory->CreateObjectsFromFile(objectManager, renderer, "Objects/title.obl");
         init = true;
     }
     auto titleLogo = objectManager->find("titleLogo");
     auto startButton = std::dynamic_pointer_cast<Button>(objectManager->find("titleStartButton"));
+    auto editorButton = std::dynamic_pointer_cast<Button>(objectManager->find("editorButton"));
     if (titleTick < 60)
     {
         titleLogo->SetVelocity({ 0,titleTick /3 * -1 });
         startButton->SetVelocity({ 0,titleTick / 3 * - 1 });
+        editorButton->SetVelocity({ 0,titleTick / 3 * -1 });
     }
 
     if (titleLogo->isTargetEmpty() && startButton->isTargetEmpty())
     {
-        Event e;
-        e.eid = EID::TITLE;
-        eventHandler->PushEvent(std::make_shared<Event>(e));
+        QueueEvent(EID::TITLE);
         SDL_Log("title entry done.");
-        Event ce;
-        ce.eid = EID::TITLE_STAGE_SELECT_CALLED;
-        startButton->BindEvent(ce);
+        BindEvent(startButton, EID::TITLE_STAGE_SELECT_CALLED);
+        BindEvent(editorButton, EID::TITLE_END, "editor");
     }
     auto square = objectManager->find("square");
     ++titleTick;
 }
 void Game::title()
 {
-    bool isStartButtonActive{ false };
     for (auto object : objectManager->objects())
     {
         if (std::shared_ptr<Button> startButton = std::dynamic_pointer_cast<Button>(
         objectManager->find("titleStartButton")))
         {
-            auto startButtonOverlay = objectManager->find("titleStartButtonOverlay");
-            if (startButton->is_hover(_mouse))
-            {
-                {
-                    if(startButton->isTargetEmpty() && startButtonOverlay->isTargetEmpty()){
-                        startButton->LoadImage(renderer,"Data/startbuttonActive.png");
-                        startButtonOverlay->LoadImage(renderer, "Data/startbuttonActiveOverlay.png");
-                        SDL_FRect hitbox = startButton->hitbox();
-                        hitbox.w = 200;
-                        startButton->PushTarget({ 344,250 });
-                        startButtonOverlay->PushTarget({ 344,250 });
-                        startButton->SetVelocity({ -10,0 });
-                        startButtonOverlay->SetVelocity({ -10,0});
-                        startButton->SetHitbox(hitbox);
-                        isStartButtonActive = true;
-                    }
-                }
-            }
-            else
-            {
-                if (startButton->isTargetEmpty() && startButtonOverlay->isTargetEmpty())
-                {
-                    startButton->LoadImage(renderer, "Data/startbutton.png");
-                    startButtonOverlay->LoadImage(renderer, "Data/null.png");
-                    SDL_FRect hitbox = startButton->hitbox();
-                    hitbox.w = 128;
-                    startButton->PushTarget({ 374,250 });
-                    startButton->SetVelocity({ 10,0 });
-                    startButtonOverlay->PushTarget({ 374,250 });
-                    startButtonOverlay->SetVelocity({ 10,0 });
-                    startButton->SetHitbox(hitbox);
-                    isStartButtonActive = false;
-                }
-            }
+            interactButton(startButton);
         }
+        if (std::shared_ptr<Button> editorButton = std::dynamic_pointer_cast<Button>
+            (objectManager->find("editorButton")))
+        {
+            interactButton(editorButton);
+        }
+        // set StageButtons
         if (objectManager->name_contains(object,"stageButton"))
         {
             auto stageButton = std::dynamic_pointer_cast<TextButton>(object);
             if (object->is_hover(_mouse))
-            {
                 stageButton->SetColor(renderer,{ 255,0,0 });
-            }
             else
-            {
                 stageButton->SetColor(renderer,{ 255,255,255 });
+        }
+    }
+}
+void Game::interactButton(std::shared_ptr<Button> const& button)
+{
+    auto buttonOverlay = objectManager->find(button->objectName() + "Overlay");
+    std::string fileNameNoExtender = button->fileName().substr(0,button->fileName().size() - 4);
+    if (button->is_hover(_mouse))
+    {
+        if (!buttonActive[button->objectName()])
+        {
+            if (button->isTargetEmpty() && buttonOverlay->isTargetEmpty()) {
+                button->LoadImage(renderer, fileNameNoExtender + "Active.png");
+                buttonOverlay->LoadImage(renderer, fileNameNoExtender + "Overlay.png");
+                SDL_FRect hitbox = button->hitbox();
+                hitbox.w = hitbox.w + 64;
+                SDL_FRect ogPos = button->posRect();
+                button->PushTarget({ ogPos.x - 30,ogPos.y });
+                buttonOverlay->PushTarget({ ogPos.x - 30,ogPos.y });
+                button->SetVelocity({ -10,0 });
+                buttonOverlay->SetVelocity({ -10,0 });
+                button->SetHitbox(hitbox);
+                buttonActive[button->objectName()] = true;
+            }
+        }
+    }
+    else
+    {
+        if (button->isTargetEmpty() && buttonOverlay->isTargetEmpty())
+        {
+            if (buttonActive[button->objectName()])
+            {
+                button->LoadImage(renderer, fileNameNoExtender.substr(0, fileNameNoExtender.size() - 6) + ".png");
+                buttonOverlay->LoadImage(renderer, "Data/null.png");
+                SDL_FRect hitbox = button->hitbox();
+                hitbox.w = 128;
+                SDL_FRect ogPos = button->posRect();
+                button->PushTarget({ ogPos.x + 30,ogPos.y });
+                button->SetVelocity({ 10,0 });
+                buttonOverlay->PushTarget({ ogPos.x + 30,ogPos.y });
+                buttonOverlay->SetVelocity({ 10,0 });
+                button->SetHitbox(hitbox);
+                buttonActive[button->objectName()] = false;
             }
         }
     }
 }
-void Game::titleEnd()
+void Game::titleEnd(const std::string& info)
 {
     static int titleEndTick{ 0 } ;
     for (auto object : objectManager->objects())
     {
         if (object == objectManager->find("square"))
         {
-            object->SetVelocity({ 0, titleEndTick++ / 16 });
+            object->SetVelocity({ 0, titleEndTick});
             object->SetRotateAmount(40);
         }
         else
         {
-            object->SetVelocity({ 0, titleEndTick++ / 16 * -1 });
+            object->SetVelocity({ 0, titleEndTick * -1 });
         }
         object->SetMoveType(MoveType::DEFAULT);
         if (object->hitbox().y < 0 - object->imageRect().h
             || object->hitbox().y > scrY + object->imageRect().h)
         {
                 objectManager->DeleteObject(object);
-                //break;
         }
-
     }
+    titleEndTick++;
     if (objectManager->objects().empty())
     {
         static int fadeTick{ 0 };
-        if (fadeTick > 255)
-        {
-            fadeTick = 255;
-            return;
-        }
         SDL_SetRenderDrawColor(renderer, 255 - fadeTick,
             255 - fadeTick , 255 - fadeTick, 255);
-        fadeTick+= 8;
+        if (fadeTick > 255)
+            fadeTick = 255;
+        else if (fadeTick == 255)
+            QueueEvent(EID::LOAD, info);
+        else
+            fadeTick += 8;
+    }
+}
+void Game::load(const std::string& info)
+{
+    //check the info contains stage number.
+    if (isnumber(info))
+    {
+        SDL_Log("hi!");
+    }
+    else if (info == "editor")
+    {
+        SDL_Log("editor");
+    }
+    objectManager->SetVisibleAll(false);
+    objectManager->DeactivateAll();
+    QueueEvent(EID::LOAD_COMPLETE);
+}
+void Game::runEnter()
+{
+    static bool runInit{ false };
+    static int fadeTick{ 0 };
+    if (!runInit)
+    {
+        objectManager->SetVisibleAll(true);
+        objectManager->ActivateAll();
+        runInit = true;
+    }
+    else
+    {
+        // Set screen slowly white.
+        SDL_SetRenderDrawColor(renderer,fadeTick,fadeTick,fadeTick, 255);
+        if (fadeTick > 255)
+            fadeTick = 255;
+        else if (fadeTick == 255)
+            QueueEvent(EID::GAME);
+        else
+            fadeTick += 8;
     }
 }
 void Game::update()
@@ -454,9 +527,16 @@ void Game::update()
     curTick = SDL_GetTicks();
     for (const auto& object : objectManager->objects())
     {
-        object->Move(deltaTime);
-        object->MoveTargetted(deltaTime);
-        object->Rotate();
+        if (object->isActive())
+        {
+            object->Move(deltaTime);
+            object->MoveTargetted(deltaTime);
+            object->Rotate();
+        }
     }
+}
+bool Game::isnumber(const std::string& str)
+{
+    return std::all_of(str.begin(), str.end(), ::isdigit);
 }
 
