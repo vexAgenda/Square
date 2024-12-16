@@ -105,8 +105,8 @@ void Game::run()
 		event();
 		state();
 		input();
-		update();
 		render();
+		update();
 		SDL_Delay(10);
 	}
 }
@@ -378,8 +378,7 @@ void Game::OnMouseMove()
 				{ std::abs(placeEndPos.x - placeStartPos.x),std::abs(placeEndPos.y - placeStartPos.y) }, { 0,0,0,255 });
 			objectFactory->CreateRect<GameObject>(objectManager, renderer, rect);
 			auto wall = objectManager->find("Wall" + std::to_string(objectCount));
-			//wall->SetFluctuate(true);
-
+			wall->SetFluctuate(true);
 		}
 	break;
 	}
