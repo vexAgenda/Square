@@ -12,7 +12,6 @@ Button::Button(const std::string& str)
 
 Button::~Button()
 {
-	SDL_Log("Button Dtor called");
 	if (!_bind)
 		SDL_Log("_bind removed!");
 }

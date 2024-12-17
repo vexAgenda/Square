@@ -1,2 +1,32 @@
-﻿  Game.cpp
-  Square.vcxproj -> D:\repos\Square\x64\Debug\Square.exe
+﻿  Button.cpp
+  EventHandler.cpp
+  Game.cpp
+  GameObject.cpp
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(29,19): warning C4244: '=': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(30,19): warning C4244: '=': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(55,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(56,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(84,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(85,18): warning C4244: '=': 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  main.cpp
+  ObjectFactory.cpp
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(80,59): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(80,80): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(80,101): warning C4838: 'int'에서 'Uint8'(으)로의 변환에는 축소 변환이 필요합니다.
+  ObjectManager.cpp
+  TextButton.cpp
+  TextLabel.cpp
+C:\Users\pleas\source\repos\Square\Square\TextLabel.cpp(30,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\TextLabel.cpp(31,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\TextLabel.cpp(49,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\TextLabel.cpp(50,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  C/C++ 코드 분석을 실행하고 있습니다...
+  코드를 생성하고 있습니다...
+  Square.vcxproj -> C:\Users\pleas\source\repos\Square\x64\Debug\Square.exe
+C:\Users\pleas\source\repos\Square\Square\Game.cpp(9): warning C26495: 'Game::objectCount' 변수가 초기화되지 않았습니다. 항상 멤버 변수를 초기화하세요(type.6).
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.h(20): warning C26495: 'ObjectCapsule::_originPos' 변수가 초기화되지 않았습니다. 항상 멤버 변수를 초기화하세요(type.6).
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.h(20): warning C26495: 'ObjectCapsule::_mType' 변수가 초기화되지 않았습니다. 항상 멤버 변수를 초기화하세요(type.6).
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.h(20): warning C26495: 'ObjectCapsule::_velocity' 변수가 초기화되지 않았습니다. 항상 멤버 변수를 초기화하세요(type.6).
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.h(31): warning C26495: 'RectObjectCapsule::_rectColor' 변수가 초기화되지 않았습니다. 항상 멤버 변수를 초기화하세요(type.6).
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.h(31): warning C26495: 'RectObjectCapsule::_widthHeight' 변수가 초기화되지 않았습니다. 항상 멤버 변수를 초기화하세요(type.6).
+C:\Users\pleas\source\repos\Square\Square\ObjectFactory.h(42): warning C26495: 'ObjectIOCapsule::_widthHeight' 변수가 초기화되지 않았습니다. 항상 멤버 변수를 초기화하세요(type.6).
