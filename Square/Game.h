@@ -10,7 +10,6 @@
 #include "ObjectManager.h"
 #include "EventHandler.h"
 
-#include "TextButton.h"
 
 enum class GameState
 {
@@ -56,7 +55,7 @@ private:
 	//Queues event to game.
 	void QueueEvent(EID e, const std::string& info = {});
 	//Binds event to button.
-	void BindEvent(std::shared_ptr<Button>const& b, EID e, const std::string& info = {});
+	void BindEvent(std::shared_ptr<GameObject>const& b, EID e, const std::string& info = {});
 	//Menu select Function.
 	void MenuSelect();
 
@@ -70,8 +69,6 @@ private:
 	void update();
 
 	void render();
-	void renderTextureFadeOut(std::shared_ptr<GameObject> object);
-	void renderTextureFadeIn(std::shared_ptr<GameObject> object);
 
 	//==============================
 	// Game Behaviours
@@ -81,7 +78,7 @@ private:
 	void splash();
 	void titleEnter();
 	void title();
-	void interactButton(std::shared_ptr<Button> const& button);
+	void interactButton(std::shared_ptr<GameObject> const& button);
 	void titleEnd(const std::string& info);
 	void load(const std::string& info);
 	void runEnter();

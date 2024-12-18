@@ -19,13 +19,6 @@ enum class MoveType
 	END
 };
 
-enum class Fade
-{
-	NONE,
-	FADE_IN,
-	FADE_OUT
-};
-
 struct Color
 {
 	int r{};

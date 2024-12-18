@@ -14,7 +14,7 @@ void ObjectManager::AddObject(std::shared_ptr<GameObject> object)
 {
 	if (!object) return;
 	_objects.push_back(object);
-	_findMap[object->objectName()] = object;
+	_findMap[object->name()] = object;
 }
 
 void ObjectManager::DeleteObject(std::shared_ptr<GameObject> object)
@@ -22,7 +22,7 @@ void ObjectManager::DeleteObject(std::shared_ptr<GameObject> object)
 	auto it = std::find(_objects.begin(), _objects.end(), object);
 	if (it != _objects.end())
 	{
-		_findMap.erase(object->objectName());
+		_findMap.erase(object->name());
 		_objects.erase(it);
 	}
 }
@@ -57,5 +57,5 @@ std::shared_ptr<GameObject> ObjectManager::find(const std::string& objectName)
 
 bool ObjectManager::name_contains(std::shared_ptr<GameObject> object, const std::string& name)
 {
-	return (object->objectName().contains(name));
+	return (object->name().contains(name));
 }

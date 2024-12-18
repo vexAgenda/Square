@@ -1,7 +1,8 @@
 #include "Game.h"
-#include "Button.h"
-#include "TextButton.h"
 #include "SDL/SDL_ttf.h"
+
+#include "Component.h"
+#include "SpriteComponent.h"
 
 #include <cctype>
 #include <algorithm>
@@ -74,7 +75,7 @@ void Game::splash()
 	auto square = objectManager->find("square");
 	if (tick == 0)
 	{
-		splash->InitFade(Fade::FADE_OUT, 60, 4);
+		splash->InitFade(Fade::OUT, 60, 4);
 	}
 	if (tick > 60)
 	{
@@ -193,7 +194,7 @@ void Game::QueueEvent(EID e, const std::string& info)
 }
 
 //Binds
-void Game::BindEvent(std::shared_ptr<Button>const& b, EID e, const std::string& info)
+void Game::BindEvent(std::shared_ptr<GameObject>const& b, EID e, const std::string& info)
 {
 	Event event;
 	event.eid = e;
@@ -299,7 +300,7 @@ void Game::OnLeftClick()
 			if (button->is_hover(_mouse) && button->isEnabled() && !button->hasTarget())
 			{
 				button->ClickEvent(eventHandler);
-				buttonActive.erase(button->objectName());
+				buttonActive.erase(button->name());
 				button->disable();
 			}
 		}
@@ -319,7 +320,7 @@ void Game::OnLeftClick()
 				// enables start button and makes start button to go original position.
 				auto startButton = std::dynamic_pointer_cast<Button>(objectManager->find("titleStartButton"));
 				startButton->enable();
-				buttonActive[startButton->objectName()] = true;
+				buttonActive[startButton->name()] = true;
 			}
 		}
 	}
@@ -378,7 +379,6 @@ void Game::OnMouseMove()
 				{ std::abs(placeEndPos.x - placeStartPos.x),std::abs(placeEndPos.y - placeStartPos.y) }, { 0,0,0,255 });
 			objectFactory->CreateRect<GameObject>(objectManager, renderer, rect);
 			auto wall = objectManager->find("Wall" + std::to_string(objectCount));
-			wall->SetFluctuate(true);
 		}
 	break;
 	}
@@ -389,57 +389,11 @@ void Game::render()
 	SDL_RenderClear(renderer);
 	for (auto object : objectManager->objects())
 	{
-		if (object->visible())
-		{
-			SDL_Rect rect = object->imageRect();
-			SDL_FRect posRect = object->posRect();
-			SDL_QueryTexture(object->texture(), NULL, NULL, &rect.w,
-				&rect.h);
-			SDL_SetTextureBlendMode(object->texture(), SDL_BLENDMODE_BLEND);
-			switch (object->fadeType())
-			{
-			case Fade::FADE_IN:
-				renderTextureFadeIn(object);
-				break;
-			case Fade::FADE_OUT:
-				renderTextureFadeOut(object);
-				break;
-			}
-
-			if (SDL_RenderCopyExF(renderer, object->texture(),
-				&rect, &posRect, object->angle(), NULL, SDL_FLIP_NONE)
-				!= 0)
-			{
-				SDL_Log("Render Failed: %s", SDL_GetError());
-			}
-		}
+		auto spriteComponent = object->GetComponent<SpriteComponent>();
+		if (auto sprite = spriteComponent.lock())
+			sprite->draw(renderer);
 	}
 	SDL_RenderPresent(renderer);
-}
-
-void Game::renderTextureFadeOut(std::shared_ptr<GameObject> object)
-{
-	int currentFade = object->currentFade();
-	const int fadeAmount = object->fadeAmount();
-	if (fadeAmount * currentFade > 255)
-		currentFade = 255 / fadeAmount;
-	if (object->currentFade() > 0)
-	{
-		SDL_SetTextureAlphaMod(object->texture(), 255 - fadeAmount * currentFade);
-		object->SetCurrentFade(currentFade - fadeAmount);
-	}
-}
-void Game::renderTextureFadeIn(std::shared_ptr<GameObject> object)
-{
-	int currentFade = object->currentFade();
-	const int fadeAmount = object->fadeAmount();
-	if (fadeAmount * currentFade > 255)
-		currentFade = 255 / fadeAmount;
-	if (object->currentFade() > 0)
-	{
-		SDL_SetTextureAlphaMod(object->texture(), fadeAmount * currentFade);
-		object->SetCurrentFade(currentFade - fadeAmount);
-	}
 }
 void Game::titleEnter()
 {
@@ -493,15 +447,15 @@ void Game::title()
 		}
 	}
 }
-void Game::interactButton(std::shared_ptr<Button> const& button)
+void Game::interactButton(std::shared_ptr<GameObject> const& button)
 {
-	auto buttonOverlay = objectManager->find(button->objectName() + "Overlay");
+	auto buttonOverlay = objectManager->find(button->name() + "Overlay");
 	std::string fileNameNoExtender = button->fileName().substr(0, button->fileName().size() - 4);
 	if (button->isEnabled())
 	{
 		if (button->is_hover(_mouse))
 		{
-			if (!buttonActive[button->objectName()])
+			if (!buttonActive[button->name()])
 			{
 				if (button->isTargetEmpty() && buttonOverlay->isTargetEmpty()) {
 					button->LoadImage(renderer, fileNameNoExtender + "Active.png");
@@ -514,7 +468,7 @@ void Game::interactButton(std::shared_ptr<Button> const& button)
 					button->SetVelocity({ -10,0 });
 					buttonOverlay->SetVelocity({ -10,0 });
 					button->SetHitbox(hitbox);
-					buttonActive[button->objectName()] = true;
+					buttonActive[button->name()] = true;
 				}
 			}
 		}
@@ -522,7 +476,7 @@ void Game::interactButton(std::shared_ptr<Button> const& button)
 		{
 			if (button->isTargetEmpty() && buttonOverlay->isTargetEmpty())
 			{
-				if (buttonActive[button->objectName()])
+				if (buttonActive[button->name()])
 				{
 					button->LoadImage(renderer, fileNameNoExtender.substr(0, fileNameNoExtender.size() - 6) + ".png");
 					buttonOverlay->LoadImage(renderer, "Data/null.png");
@@ -534,7 +488,7 @@ void Game::interactButton(std::shared_ptr<Button> const& button)
 					buttonOverlay->PushTarget({ ogPos.x + 30,ogPos.y });
 					buttonOverlay->SetVelocity({ 10,0 });
 					button->SetHitbox(hitbox);
-					buttonActive[button->objectName()] = false;
+					buttonActive[button->name()] = false;
 				}
 			}
 		}
@@ -654,8 +608,6 @@ void Game::update()
 			object->MoveTargetted(deltaTime);
 			object->Rotate();
 		}
-		if (object->isFluctuate())
-			objectManager->DeleteObject(object);
 	}
 }
 bool Game::isnumber(const std::string& str)

@@ -2,7 +2,6 @@
 
 GameObject::GameObject()
 {
-	_velocity.push({ 0, 0 });
 }
 
 GameObject::GameObject(const std::string& name)
@@ -12,7 +11,6 @@ GameObject::GameObject(const std::string& name)
 
 GameObject::~GameObject()
 {
-	SDL_DestroyTexture(_texture);
 }
 
 bool GameObject::MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect, const SDL_Color& rectColor)
@@ -72,106 +70,6 @@ void GameObject::InitFade(Fade fadeType, int currentFade, int amount)
 	SetFadeAmount(amount);
 }
 
-const bool GameObject::hasTarget() const
-{
-	return !_targetCoords.empty();
-}
-
-void GameObject::InitMove(const Vector2F& initPos, const Vector2F& velocity, const MoveType& mType)
-{
-	SetPos(initPos);
-	Vector2 vel;
-	vel.x = velocity.x;
-	vel.y = velocity.y;
-	SetVelocity(vel);
-	SetMoveType(mType);
-}
-
-void GameObject::SetPos(const Vector2F& pos)
-{
-	_posRect.x = pos.x;
-	_posRect.y = pos.y;
-}
-
-void GameObject::SetVelocity(const Vector2& vel, bool isStatic)
-{
-	if (_velocity.empty())
-		_velocity.push(vel);
-	if (isStatic)
-		_velocity.front() = vel;
-	else
-		_velocity.push(vel);
-}
-
-void GameObject::SetMoveType(const MoveType& mType)
-{
-	_moveType = mType;
-}
-
-void GameObject::Move(float deltaTime)
-{
-	if (_isTargetted)
-		return;
-	switch (_moveType)
-	{
-	case MoveType::DEFAULT:
-		MoveDefault(deltaTime);
-		break;
-	case MoveType::SQUARE:
-		MoveExponential(deltaTime);
-		break;
-	}
-}
-
-void GameObject::MoveTargetted(float deltaTime)
-{
-	if (!_isTargetted)
-		return;
-	if (_targetCoords.empty())
-	{
-		_isTargetted = false;
-		_velocity.front() = { 0,0 };
-		SDL_Log("%s : Move Done!", _objectName.c_str());
-		return;
-	}
-	Vector2F target = _targetCoords.front();
-	Vector2 velocity = _velocity.front();
-	switch (_moveType)
-	{
-	case MoveType::DEFAULT:
-		MoveDefault(deltaTime);
-		break;
-	case MoveType::SQUARE:
-		MoveExponential(deltaTime);
-		break;
-	}
-	if ((velocity.x < 0 && _posRect.x <= target.x) ||
-		(velocity.x > 0 && _posRect.x >= target.x))
-	{
-		_posRect.x = target.x;
-	}
-	if ((velocity.y < 0 && _posRect.y <= target.y) ||
-		(velocity.y > 0 && _posRect.y >= target.y))
-	{
-		_posRect.y = target.y;
-	}
-	if (_posRect.x == target.x && _posRect.y == target.y)
-	{
-		_targetCoords.pop();
-		if (_velocity.size() > 1)
-			_velocity.pop();
-		else
-			_velocity.front() = { 0,0 };
-	}
-}
-
-void GameObject::PushTarget(const Vector2F& pos)
-{
-	if (!_isTargetted)
-		_isTargetted = true;
-	_targetCoords.push(pos);
-}
-
 bool GameObject::is_hover(const Vector2& mouse)
 {
 	return mouse.x >= _hitbox.x &&
@@ -188,32 +86,4 @@ void GameObject::Rotate()
 	else if (nextAngle > 2 * M_PI)
 		nextAngle -= 2 * (std::abs(_rotate_amount) / 360) * M_PI;
 	_angle = nextAngle;
-}
-
-void GameObject::MoveDefault(float deltaTime)
-{
-	if (_velocity.empty())
-		return;
-	Vector2 velocity = _velocity.front();
-	_posRect.x += velocity.x * deltaTime;
-	_posRect.y += velocity.y * deltaTime;
-	_hitbox.x = _posRect.x;
-	_hitbox.y = _posRect.y;
-}
-
-void GameObject::MoveExponential(float deltaTime)
-{
-	if (_velocity.empty())
-		return;
-	Vector2 velocity = _velocity.front();
-	if (velocity.x > 0)
-		_posRect.x += velocity.x * velocity.x * deltaTime;
-	else
-		_posRect.x += velocity.x * velocity.x * -1 * deltaTime;
-	if (velocity.y > 0)
-		_posRect.y += velocity.y * velocity.y * deltaTime;
-	else
-		_posRect.y += velocity.y * velocity.y * -1 * deltaTime;
-	_hitbox.x = _posRect.x;
-	_hitbox.y = _posRect.y;
 }
