@@ -16,63 +16,81 @@
     <Filter Include="GameObjects">
       <UniqueIdentifier>{6ff4d68e-6ad3-4ac9-a3f8-efe78824bef8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObjects\Components">
+      <UniqueIdentifier>{16750a45-122e-4a8d-8398-7c8f6d321c02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{79545cd0-55c1-4ca5-ba60-06f926c79162}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="EventHandler.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>GameObjects</Filter>
+    <ClCompile Include="Component.cpp">
+      <Filter>GameObjects\Components</Filter>
     </ClCompile>
-    <ClCompile Include="TextButton.cpp">
-      <Filter>GameObjects</Filter>
+    <ClCompile Include="Game.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectFactory.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="EventHandler.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="TextLabel.cpp">
-      <Filter>GameObjects</Filter>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveComponent.cpp">
+      <Filter>GameObjects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteComponent.cpp">
+      <Filter>GameObjects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonComponent.cpp">
+      <Filter>GameObjects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TextComponent.cpp">
+      <Filter>GameObjects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="EventHandler.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="TextButton.h">
-      <Filter>GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectFactory.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ObjectEssentials.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="TextLabel.h">
-      <Filter>GameObjects</Filter>
+    <ClInclude Include="Component.h">
+      <Filter>GameObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveComponent.h">
+      <Filter>GameObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteComponent.h">
+      <Filter>GameObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonComponent.h">
+      <Filter>GameObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TextComponent.h">
+      <Filter>GameObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
