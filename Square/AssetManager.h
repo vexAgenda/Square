@@ -13,9 +13,10 @@ public:
 	~AssetManager();
 
 	template<typename T>
-	T GetAsset(const std::string& fileName);
+	T GetAsset(SDL_Renderer* renderer,const std::string& fileName);
 private:
-	bool Fetch(const std::string* fileName);
+	template<typename T>
+	T Fetch(SDL_Renderer* renderer,const std::string& fileName);
 private:
 	std::unordered_map<std::string, SDL_Texture*> _textures;
 	std::unordered_map<std::string, TTF_Font*> _fonts;

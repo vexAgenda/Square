@@ -14,8 +14,6 @@ public:
 	GameObject(const std::string& name);
 	virtual ~GameObject();
 
-	virtual bool LoadImage(SDL_Renderer* renderer, const std::string& str);
-
 	std::string name() { return _objectName; }
 	std::string fileName() { return _fileName; }
 

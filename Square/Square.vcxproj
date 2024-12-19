@@ -139,7 +139,6 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
-    <ClCompile Include="ObjectFactory.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="TextComponent.cpp" />
@@ -153,7 +152,6 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="ObjectEssentials.h" />
-    <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="TextComponent.h" />

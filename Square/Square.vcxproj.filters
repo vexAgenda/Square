@@ -39,9 +39,6 @@
     <ClCompile Include="EventHandler.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectFactory.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectManager.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -75,9 +72,6 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectFactory.h">
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="ObjectManager.h">
