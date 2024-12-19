@@ -57,6 +57,9 @@
     <ClCompile Include="TextComponent.cpp">
       <Filter>GameObjects\Components</Filter>
     </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="TextComponent.h">
       <Filter>GameObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,6 +21,7 @@ public:
 	virtual void draw(SDL_Renderer* renderer);
 
 	void SetTexture(SDL_Texture* texture);
+	void SetBackroundRect(const Vector2F& widthHeight);
 	void SetBackground(SDL_Renderer* renderer,SDL_Color rectColor);
 	//Fade
 	Fade fadeType() { return _fadeType; }

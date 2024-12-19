@@ -1,4 +1,27 @@
-﻿  Game.cpp
+﻿  AssetManager.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\SDL\SDL_ttf.h(164,26): error C2371: 'TTF_Font': 재정의. 기본 형식이 다릅니다.
+  (소스 파일 'AssetManager.cpp'을(를) 컴파일하는 중)
+      C:\Users\pleas\source\repos\Square\Square\AssetManager.h(7,8):
+      'TTF_Font' 선언을 참조하십시오.
+  
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(17,17): error C2143: 구문 오류: ';'이(가) 'AssetManager::GetAsset' 앞에 없습니다.
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(17,1): error C4430: 형식 지정자가 없습니다. int로 가정합니다. 참고: C++에서는 기본 int를 지원하지 않습니다.
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(17,17): error C4430: 형식 지정자가 없습니다. int로 가정합니다. 참고: C++에서는 기본 int를 지원하지 않습니다.
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(17,17): error C2511: 'int AssetManager::GetAsset(const std::string &)': 오버로드된 멤버 함수가 'AssetManager'에 없습니다.
+      C:\Users\pleas\source\repos\Square\Square\AssetManager.h(9,7):
+      'AssetManager' 선언을 참조하십시오.
+  
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(20,21): error C2923: 'std::is_same_v': 'T'은(는) '<unnamed-symbol>' 매개 변수에 대한 올바른 템플릿 형식 인수가 아닙니다.
+      C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(17,1):
+      'T' 선언을 참조하십시오.
+  
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(20,47): error C2059: 구문 오류: ')'
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(21,2): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(23,7): error C3536: 'it': 초기화되기 전에 사용할 수 없습니다.
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(27,8): error C2059: 구문 오류: ')'
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(28,4): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\pleas\source\repos\Square\Square\AssetManager.cpp(31,4): error C2181: if와 짝을 이루지 않는 잘못된 else문입니다.
+  Game.cpp
 C:\Users\pleas\source\repos\Square\Square\Game.cpp(78,11): error C2039: 'InitFade': 'GameObject'의 멤버가 아닙니다.
       C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
       'GameObject' 선언을 참조하십시오.
@@ -93,6 +116,10 @@ C:\Users\pleas\source\repos\Square\Square\Game.cpp(298,26): error C2672: 'std::d
           'std::dynamic_pointer_cast': '_Ty1'의 템플릿 인수가 잘못되었습니다. 형식이 필요합니다.
   
 C:\Users\pleas\source\repos\Square\Square\Game.cpp(298,12): error C3536: 'button': 초기화되기 전에 사용할 수 없습니다.
+C:\Users\pleas\source\repos\Square\Square\Game.cpp(310,17): error C2039: 'is_hover': 'GameObject'의 멤버가 아닙니다.
+      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
+      'GameObject' 선언을 참조하십시오.
+  
 C:\Users\pleas\source\repos\Square\Square\Game.cpp(312,13): error C2039: 'InitFade': 'GameObject'의 멤버가 아닙니다.
       C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
       'GameObject' 선언을 참조하십시오.
@@ -417,16 +444,16 @@ C:\Users\pleas\source\repos\Square\Square\Game.cpp(442,28): error C2672: 'std::d
           C:\Users\pleas\source\repos\Square\Square\Game.cpp(442,49):
           'std::dynamic_pointer_cast': '_Ty1'의 템플릿 인수가 잘못되었습니다. 형식이 필요합니다.
   
+C:\Users\pleas\source\repos\Square\Square\Game.cpp(443,16): error C2039: 'is_hover': 'GameObject'의 멤버가 아닙니다.
+      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
+      'GameObject' 선언을 참조하십시오.
+  
 C:\Users\pleas\source\repos\Square\Square\Game.cpp(444,5): error C3536: 'stageButton': 초기화되기 전에 사용할 수 없습니다.
-C:\Users\pleas\source\repos\Square\Square\Game.cpp(453,43): error C2039: 'fileName': 'GameObject'의 멤버가 아닙니다.
-      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
-      'GameObject' 선언을 참조하십시오.
-  
-C:\Users\pleas\source\repos\Square\Square\Game.cpp(453,72): error C2039: 'fileName': 'GameObject'의 멤버가 아닙니다.
-      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
-      'GameObject' 선언을 참조하십시오.
-  
 C:\Users\pleas\source\repos\Square\Square\Game.cpp(454,14): error C2039: 'isEnabled': 'GameObject'의 멤버가 아닙니다.
+      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
+      'GameObject' 선언을 참조하십시오.
+  
+C:\Users\pleas\source\repos\Square\Square\Game.cpp(456,15): error C2039: 'is_hover': 'GameObject'의 멤버가 아닙니다.
       C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
       'GameObject' 선언을 참조하십시오.
   
@@ -434,52 +461,13 @@ C:\Users\pleas\source\repos\Square\Square\Game.cpp(460,17): error C2039: 'isTarg
       C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
       'GameObject' 선언을 참조하십시오.
   
-C:\Users\pleas\source\repos\Square\Square\Game.cpp(460,51): error C2039: 'isTargetEmpty': 'GameObject'의 멤버가 아닙니다.
-      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
-      'GameObject' 선언을 참조하십시오.
-  
-C:\Users\pleas\source\repos\Square\Square\Game.cpp(460,51): error C1003: 오류 수가 100개를 초과했습니다. 컴파일을 중지합니다.
+C:\Users\pleas\source\repos\Square\Square\Game.cpp(460,17): error C1003: 오류 수가 100개를 초과했습니다. 컴파일을 중지합니다.
   GameObject.cpp
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(25,2): error C2065: '_rectColor': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(26,2): error C2065: '_imageRect': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(27,19): warning C4244: '=': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(28,19): warning C4244: '=': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(30,2): error C2065: '_texture': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(31,6): error C2065: '_texture': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(42,6): error C2065: '_fileName': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(51,2): error C2065: '_fileName': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(52,2): error C2065: '_imageRect': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(53,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(54,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(57,2): error C2065: '_texture': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(58,6): error C2065: '_texture': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(66,18): error C2039: 'InitFade': 'GameObject'의 멤버가 아닙니다.
-      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
-      'GameObject' 선언을 참조하십시오.
-  
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(66,18): error C2182: 'InitFade': 이 'void' 사용은 유효하지 않습니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(66,27): error C2065: 'Fade': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(66,32): error C2146: 구문 오류: ')'이(가) 'fadeType' 식별자 앞에 없습니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(67,1): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(67,1): error C2447: '{': 함수 헤더가 없습니다. 이전 스타일의 형식 목록입니까?
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(81,18): error C2039: 'Rotate': 'GameObject'의 멤버가 아닙니다.
-      C:\Users\pleas\source\repos\Square\Square\GameObject.h(10,7):
-      'GameObject' 선언을 참조하십시오.
-  
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(83,21): error C2065: '_angle': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(83,30): error C2065: '_rotate_amount': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(85,30): error C2065: '_rotate_amount': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(87,30): error C2065: '_rotate_amount': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(88,2): error C2065: '_angle': 선언되지 않은 식별자입니다.
-  MoveComponent.cpp
-C:\Users\pleas\source\repos\Square\Square\MoveComponent.cpp(17,3): error C3861: 'SetPos': 식별자를 찾을 수 없습니다.
-C:\Users\pleas\source\repos\Square\Square\MoveComponent.cpp(28,21): error C2039: 'SetPos': 'MoveComponent'의 멤버가 아닙니다.
-      C:\Users\pleas\source\repos\Square\Square\MoveComponent.h(8,7):
-      'MoveComponent' 선언을 참조하십시오.
-  
-C:\Users\pleas\source\repos\Square\Square\MoveComponent.cpp(30,6): error C2065: '_owner': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\MoveComponent.cpp(32,3): error C2065: '_owner': 선언되지 않은 식별자입니다.
-C:\Users\pleas\source\repos\Square\Square\MoveComponent.cpp(33,3): error C2065: '_owner': 선언되지 않은 식별자입니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(29,2): error C2065: '_imageRect': 선언되지 않은 식별자입니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(30,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(31,34): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(34,2): error C2065: '_texture': 선언되지 않은 식별자입니다.
+C:\Users\pleas\source\repos\Square\Square\GameObject.cpp(35,6): error C2065: '_texture': 선언되지 않은 식별자입니다.
   ObjectFactory.cpp
 C:\Users\pleas\source\repos\Square\Square\ObjectFactory.cpp(3,10): error C1083: 포함 파일을 열 수 없습니다. 'TextButton.h': No such file or directory
   ObjectManager.cpp
@@ -496,9 +484,25 @@ C:\Users\pleas\source\repos\Square\Square\ObjectManager.cpp(50,11): error C2039:
       'GameObject' 선언을 참조하십시오.
   
   SpriteComponent.cpp
-C:\Users\pleas\source\repos\Square\Square\SpriteComponent.cpp(64,44): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\pleas\source\repos\Square\Square\SpriteComponent.cpp(64,23): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\SpriteComponent.h(24,24): error C4430: 형식 지정자가 없습니다. int로 가정합니다. 참고: C++에서는 기본 int를 지원하지 않습니다.
+  (소스 파일 'SpriteComponent.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\pleas\source\repos\Square\Square\SpriteComponent.h(24,38): error C2143: 구문 오류: ','이(가) '&' 앞에 없습니다.
+  (소스 파일 'SpriteComponent.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\pleas\source\repos\Square\Square\SpriteComponent.cpp(61,23): error C2511: 'void SpriteComponent::SetBackroundRect(const Vector2F &)': 오버로드된 멤버 함수가 'SpriteComponent'에 없습니다.
+      C:\Users\pleas\source\repos\Square\Square\SpriteComponent.h(13,7):
+      'SpriteComponent' 선언을 참조하십시오.
+  
+C:\Users\pleas\source\repos\Square\Square\SpriteComponent.cpp(71,44): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\SpriteComponent.cpp(71,23): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   TextComponent.cpp
+C:\Users\pleas\source\repos\Square\Square\SpriteComponent.h(24,24): error C4430: 형식 지정자가 없습니다. int로 가정합니다. 참고: C++에서는 기본 int를 지원하지 않습니다.
+  (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\pleas\source\repos\Square\Square\SpriteComponent.h(24,38): error C2143: 구문 오류: ','이(가) '&' 앞에 없습니다.
+  (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
+  
 C:\Users\pleas\source\repos\Square\Square\ObjectEssentials.h(34,7): error C2039: 'string': 'std'의 멤버가 아닙니다.
   (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(31,1):
@@ -513,22 +517,30 @@ C:\Users\pleas\source\repos\Square\Square\ObjectEssentials.h(34,18): error C2059
 C:\Users\pleas\source\repos\Square\Square\ObjectEssentials.h(34,18): error C2334: '{' 앞에 예기치 않은 토큰이 있습니다. 명백한 함수 본문을 건너뜁니다.
   (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
   
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\cmath(36,1): error C2059: 구문 오류: '문자열'
+  (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
+  
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\cmath(36,1): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+  (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
+  
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\cmath(36,1): error C2447: '{': 함수 헤더가 없습니다. 이전 스타일의 형식 목록입니까?
+  (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
+  
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\SDL\SDL_ttf.h(164,26): error C2371: 'TTF_Font': 재정의. 기본 형식이 다릅니다.
   (소스 파일 'TextComponent.cpp'을(를) 컴파일하는 중)
-      C:\Users\pleas\source\repos\Square\Square\TextComponent.h(6,8):
+      C:\Users\pleas\source\repos\Square\Square\TextComponent.h(8,8):
       'TTF_Font' 선언을 참조하십시오.
   
-C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(37,60): error C2039: '_msg': 'Text'의 멤버가 아닙니다.
+C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(17,60): error C2039: '_msg': 'Text'의 멤버가 아닙니다.
       C:\Users\pleas\source\repos\Square\Square\ObjectEssentials.h(30,8):
       'Text' 선언을 참조하십시오.
   
-C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(37,26): error C2660: 'TTF_RenderText_Solid': 함수는 2개의 인수를 사용하지 않습니다.
+C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(17,26): error C2660: 'TTF_RenderText_Solid': 함수는 2개의 인수를 사용하지 않습니다.
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\SDL\SDL_ttf.h(994,39):
       'TTF_RenderText_Solid' 선언을 참조하십시오.
-      C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(37,26):
+      C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(17,26):
       인수 목록 '(TTF_Font *, SDL_Color)'을(를) 일치시키는 동안
   
-C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(38,43): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(39,43): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(18,43): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\pleas\source\repos\Square\Square\TextComponent.cpp(19,43): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   코드를 생성하고 있습니다...
-C:\Users\pleas\source\repos\Square\Square\SpriteComponent.cpp(30,1): error C4716: 'SpriteComponent::init': 값을 반환해야 합니다.

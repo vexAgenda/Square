@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="ButtonComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="EventHandler.cpp" />
@@ -144,6 +145,7 @@
     <ClCompile Include="TextComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="ButtonComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="EventHandler.h" />

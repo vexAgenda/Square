@@ -25,8 +25,9 @@ bool SpriteComponent::init(const std::vector<std::any>& _args)
 	}
 	catch (std::bad_any_cast)
 	{
-
+		return false;
 	}
+	return true;
 }
 
 void SpriteComponent::draw(SDL_Renderer* renderer)
@@ -55,6 +56,12 @@ void SpriteComponent::SetTexture(SDL_Texture* texture)
 	SDL_QueryTexture(_texture, nullptr, nullptr, &w, &h);
 	_owner->posRect().w = static_cast<float>(w);
 	_owner->posRect().h = static_cast<float>(h);
+}
+
+void SpriteComponent::SetBackroundRect(const Vector2F& widthHeight)
+{
+	_owner->posRect().w = widthHeight.x;
+	_owner->posRect().h = widthHeight.y;
 }
 
 void SpriteComponent::SetBackground(SDL_Renderer* renderer,SDL_Color rectColor)

@@ -14,11 +14,15 @@ public:
 	GameObject(const std::string& name);
 	virtual ~GameObject();
 
-	bool MakeRect(SDL_Renderer* renderer, const SDL_Rect& rect, const SDL_Color& rectColor);
 	virtual bool LoadImage(SDL_Renderer* renderer, const std::string& str);
 
 	std::string name() { return _objectName; }
-	std::string textureName() { return _textureName; }
+	std::string fileName() { return _fileName; }
+
+	void SetFileName(const std::string& name)
+	{
+		_fileName = name;
+	}
 	void SetPos(const Vector2F& pos) 
 	{
 		_posRect.x = pos.x;
@@ -41,7 +45,6 @@ public:
 			);
 	}
 	const SDL_FRect& hitbox() const { return _hitbox; }
-	bool is_hover(const Vector2& mouse);
 
 	double& angle() {
 		return const_cast<double&>(
@@ -62,7 +65,7 @@ public:
 protected:
 	std::vector<std::shared_ptr<Component>> _components;
 	std::string _objectName{};
-	std::string _textureName{};
+	std::string _fileName{};
 
 	SDL_FRect _posRect{};
 	SDL_FRect _hitbox{};

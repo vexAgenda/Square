@@ -14,7 +14,7 @@ bool MoveComponent::init(const std::vector<std::any>& _arg)
 {
 	try
 	{
-		SetPos(std::any_cast<Vector2F>(_arg[0]));
+		_owner->SetPos(std::any_cast<Vector2F>(_arg[0]));
 		SetVelocity(std::any_cast<Vector2F>(_arg[1]));
 	}
 	catch (std::bad_any_cast)
@@ -23,15 +23,6 @@ bool MoveComponent::init(const std::vector<std::any>& _arg)
 		return false;
 	}
 	return true;
-}
-
-void MoveComponent::SetPos(const Vector2F& pos)
-{
-	if (_owner)
-	{
-		_owner->posRect().x = pos.x;
-		_owner->posRect().y = pos.y;
-	}
 }
 
 void MoveComponent::SetVelocity(const Vector2F& vel, bool hasOnlyOne)
